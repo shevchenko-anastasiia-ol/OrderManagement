@@ -6,6 +6,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrderManagementAPI", "Order
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrderManagementDAL", "OrderManagementDAL\OrderManagementDAL.csproj", "{0A722F7E-4275-4089-BDE1-1BDC691CB16C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrderManagementBLL", "OrderManagementBLL\OrderManagementBLL.csproj", "{31594EBD-9ADB-41C8-A54D-8F037853BBF6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +26,9 @@ Global
 		{0A722F7E-4275-4089-BDE1-1BDC691CB16C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0A722F7E-4275-4089-BDE1-1BDC691CB16C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0A722F7E-4275-4089-BDE1-1BDC691CB16C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{31594EBD-9ADB-41C8-A54D-8F037853BBF6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{31594EBD-9ADB-41C8-A54D-8F037853BBF6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{31594EBD-9ADB-41C8-A54D-8F037853BBF6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{31594EBD-9ADB-41C8-A54D-8F037853BBF6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
