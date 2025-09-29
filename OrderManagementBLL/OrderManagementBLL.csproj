@@ -8,7 +8,6 @@
 
     <ItemGroup>
       <Folder Include="Extentions\" />
-      <Folder Include="Validators\" />
     </ItemGroup>
 
     <ItemGroup>
@@ -18,6 +17,7 @@
     <ItemGroup>
       <PackageReference Include="AutoMapper" Version="15.0.1" />
       <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
+      <PackageReference Include="FluentValidation" Version="12.0.0" />
       <PackageReference Include="xunit" Version="2.9.3" />
     </ItemGroup>
 

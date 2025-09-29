@@ -2,6 +2,7 @@
 
 public class ShipmentUpdateDto
 {
+    public long ShipmentId { get; set; }
     public string TrackingNumber { get; set; }
     public string Carrier { get; set; }
     public string Status { get; set; }

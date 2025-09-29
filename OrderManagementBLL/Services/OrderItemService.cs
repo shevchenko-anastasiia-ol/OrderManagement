@@ -2,6 +2,7 @@
 using MarketplaceDAL.Models;
 using MarketplaceDAL.UnitOfWork;
 using OrderManagementBLL.DTOs.OrderItem;
+using OrderManagementBLL.Exceptions;
 using OrderManagementBLL.Services.Interfaces;
 
 namespace OrderManagementBLL.Services;
@@ -26,11 +27,17 @@ public class OrderItemService : IOrderItemService
     public async Task<OrderItemDto> GetByIdAsync(long id)
     {
         var item = await _unitOfWork.OrderItemRepository.GetByIdAsync(id);
+        if (item == null)
+            throw new NotFoundException($"OrderItem with ID {id} was not found.");
+
         return _mapper.Map<OrderItemDto>(item);
     }
 
     public async Task<OrderItemDto> AddAsync(OrderItemCreateDto dto, string createdBy)
     {
+        if (dto.Quantity <= 0)
+            throw new ValidationException("Quantity must be greater than zero.");
+
         var item = _mapper.Map<OrderItem>(dto);
         item.CreatedAt = DateTime.UtcNow;
         item.CreatedBy = createdBy;
@@ -44,7 +51,11 @@ public class OrderItemService : IOrderItemService
     public async Task<OrderItemDto> UpdateAsync(OrderItemUpdateDto dto, string updatedBy)
     {
         var item = await _unitOfWork.OrderItemRepository.GetByIdAsync(dto.OrderItemId);
-        if (item == null) return null;
+        if (item == null)
+            throw new NotFoundException($"OrderItem with ID {dto.OrderItemId} was not found.");
+
+        if (dto.Quantity <= 0)
+            throw new ValidationException("Quantity must be greater than zero.");
 
         _mapper.Map(dto, item);
         item.UpdatedAt = DateTime.UtcNow;
@@ -59,7 +70,8 @@ public class OrderItemService : IOrderItemService
     public async Task DeleteAsync(long id)
     {
         var item = await _unitOfWork.OrderItemRepository.GetByIdAsync(id);
-        if (item == null) return;
+        if (item == null)
+            throw new NotFoundException($"OrderItem with ID {id} was not found.");
 
         item.IsDeleted = true;
         item.UpdatedAt = DateTime.UtcNow;
@@ -71,6 +83,9 @@ public class OrderItemService : IOrderItemService
     public async Task<IEnumerable<OrderItemDto>> GetByOrderIdAsync(long orderId)
     {
         var items = await _unitOfWork.OrderItemRepository.GetByOrderIdAsync(orderId);
+        if (items == null || !items.Any())
+            throw new NotFoundException($"No OrderItems found for Order ID {orderId}.");
+
         return _mapper.Map<IEnumerable<OrderItemDto>>(items);
     }
 

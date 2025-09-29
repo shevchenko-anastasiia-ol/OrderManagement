@@ -2,6 +2,7 @@
 using MarketplaceDAL.Models;
 using MarketplaceDAL.UnitOfWork;
 using OrderManagementBLL.DTOs.Product;
+using OrderManagementBLL.Exceptions;
 using OrderManagementBLL.Services.Interfaces;
 
 namespace OrderManagementBLL.Services;
@@ -27,11 +28,19 @@ public class ProductService : IProductService
     public async Task<ProductDto> GetByIdAsync(long id)
     {
         var product = await _unitOfWork.ProductRepository.GetByIdAsync(id);
+        if (product == null)
+            throw new NotFoundException($"Product with ID {id} was not found.");
+
         return _mapper.Map<ProductDto>(product);
     }
 
     public async Task<ProductDto> AddAsync(ProductCreateDto dto, string createdBy)
     {
+        if (string.IsNullOrWhiteSpace(dto.ProductName))
+            throw new ValidationException("Product name is required.");
+        if (dto.Price < 0)
+            throw new ValidationException("Product price cannot be negative.");
+
         var product = _mapper.Map<Product>(dto);
         product.CreatedAt = DateTime.UtcNow;
         product.CreatedBy = createdBy;
@@ -45,7 +54,8 @@ public class ProductService : IProductService
     public async Task<ProductDto> UpdateAsync(ProductUpdateDto dto, string updatedBy)
     {
         var product = await _unitOfWork.ProductRepository.GetByIdAsync(dto.ProductId);
-        if (product == null) return null;
+        if (product == null)
+            throw new NotFoundException($"Product with ID {dto.ProductId} was not found.");
 
         _mapper.Map(dto, product);
         product.UpdatedAt = DateTime.UtcNow;
@@ -60,7 +70,8 @@ public class ProductService : IProductService
     public async Task DeleteAsync(long id)
     {
         var product = await _unitOfWork.ProductRepository.GetByIdAsync(id);
-        if (product == null) return;
+        if (product == null)
+            throw new NotFoundException($"Product with ID {id} was not found.");
 
         product.IsDeleted = true;
         product.UpdatedAt = DateTime.UtcNow;
@@ -72,6 +83,11 @@ public class ProductService : IProductService
     // --- Спеціальні методи ---
     public async Task<IEnumerable<ProductDto>> GetProductsByPriceRangeAsync(decimal minPrice, decimal maxPrice)
     {
+        if (minPrice < 0 || maxPrice < 0)
+            throw new ValidationException("Price range cannot be negative.");
+        if (minPrice > maxPrice)
+            throw new ValidationException("Min price cannot be greater than max price.");
+
         var products = await _unitOfWork.ProductRepository.GetProductsByPriceRangeAsync(minPrice, maxPrice);
         return _mapper.Map<IEnumerable<ProductDto>>(products);
     }
@@ -84,6 +100,9 @@ public class ProductService : IProductService
 
     public async Task<IEnumerable<ProductDto>> FindProductsByNameAsync(string name)
     {
+        if (string.IsNullOrWhiteSpace(name))
+            throw new ValidationException("Product name cannot be empty.");
+
         var products = await _unitOfWork.ProductRepository.FindProductsByNameAsync(name);
         return _mapper.Map<IEnumerable<ProductDto>>(products);
     }
@@ -98,10 +117,12 @@ public class ProductService : IProductService
         return await _unitOfWork.ProductRepository.GetDistinctProductNamesAsync();
     }
 
-
     public async Task<ProductDto> GetProductWithOrderItemsAsync(long productId)
     {
         var product = await _unitOfWork.ProductRepository.GetProductWithOrderItemsAsync(productId);
+        if (product == null)
+            throw new NotFoundException($"Product with ID {productId} was not found.");
+
         return _mapper.Map<ProductDto>(product);
     }
 }
