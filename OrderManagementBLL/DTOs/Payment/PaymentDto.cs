@@ -19,22 +19,4 @@ public class PaymentDto
     // Concurrency control
     public byte[] RowVer { get; set; }
     
-    // Extended information (можна завантажувати через join)
-    public string OrderNumber { get; set; }
-    public string CustomerName { get; set; }
-    public decimal OrderTotalAmount { get; set; }
-    
-    // Computed properties
-    public string FormattedAmount => Amount.ToString("C");
-    public string FormattedPaymentDate => PaymentDate.ToString("dd.MM.yyyy HH:mm");
-    public bool IsSuccessful => PaymentStatus?.ToLower() == "completed" || PaymentStatus?.ToLower() == "success";
-    public bool IsPending => PaymentStatus?.ToLower() == "pending" || PaymentStatus?.ToLower() == "processing";
-    public bool IsFailed => PaymentStatus?.ToLower() == "failed" || PaymentStatus?.ToLower() == "declined";
-    public bool IsRefunded => PaymentStatus?.ToLower() == "refunded" || PaymentStatus?.ToLower() == "cancelled";
-    public bool CanBeRefunded => IsSuccessful && !IsRefunded;
-    public bool IsPartialPayment => Amount < OrderTotalAmount;
-    public bool IsOverpayment => Amount > OrderTotalAmount;
-    public decimal PaymentDifference => Amount - OrderTotalAmount;
-    public int DaysFromPayment => (DateTime.Now - PaymentDate).Days;
-    
 }

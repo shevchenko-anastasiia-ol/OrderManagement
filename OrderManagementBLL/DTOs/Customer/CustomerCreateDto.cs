@@ -1,6 +1,6 @@
 ﻿namespace OrderManagementBLL.DTOs.Customer;
 
-public class CustomerCreate
+public class CustomerCreateDto
 {
     public string FirstName { get; set; }
     public string LastName { get; set; }
