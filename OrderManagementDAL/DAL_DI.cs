@@ -1,7 +1,9 @@
-﻿using MarketplaceDAL.Models;
+﻿using System.Data;
+using MarketplaceDAL.Models;
 using MarketplaceDAL.Repositories;
 using MarketplaceDAL.Repositories.Interfaces;
 using MarketplaceDAL.UnitOfWork;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,14 +17,13 @@ public static class DAL_DI
     {
         var connectionString = configuration.GetConnectionString("DefaultConnection");
         
-        services.AddDbContext<OrderManagementDbContext>(options => 
-            options.UseSqlServer(connectionString));
+        services.AddScoped<IDbConnection>(sp => new SqlConnection(connectionString));
         
         services.AddScoped<ICustomerRepository, CustomerRepository>();
         services.AddScoped<IProductRepository, ProductRepository>();
         services.AddScoped<IOrderRepository, OrderRepository>();
-        services.AddScoped<PaymentRepository, PaymentRepository>();
-        services.AddScoped<ShipmentRepository, ShipmentRepository>();
+        services.AddScoped<IPaymentRepository, PaymentRepository>();
+        services.AddScoped<IShipmentRepository, ShipmentRepository>();
         services.AddScoped<IOrderItemRepository, OrderItemRepository>();
         
         services.AddScoped<IUnitOfWork, UnitOfWork.UnitOfWork>();

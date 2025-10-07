@@ -20,7 +20,7 @@ namespace MarketplaceDAL.UnitOfWork
         public IPaymentRepository PaymentRepository { get; }
         public IShipmentRepository ShipmentRepository { get; }
 
-        public UnitOfWork(string connectionString,
+        public UnitOfWork(IDbConnection connection,
             ICustomerRepository customerRepository,
             IOrderRepository orderRepository,
             IOrderItemRepository orderItemRepository,
@@ -28,7 +28,7 @@ namespace MarketplaceDAL.UnitOfWork
             IPaymentRepository paymentRepository,
             IShipmentRepository shipmentRepository)
         {
-            _connection = new SqlConnection(connectionString);
+            _connection = connection;
 
             CustomerRepository = customerRepository;
             OrderRepository = orderRepository;
