@@ -54,7 +54,7 @@ namespace OrderManagementBLL.Services
             await _unitOfWork.BeginTransactionAsync();
             try
             {
-                await _unitOfWork.OrderItemRepository.AddAsync(item, _unitOfWork.Transaction);
+                await _unitOfWork.OrderItemRepository.AddAsync(item);
                 await _unitOfWork.CommitAsync();
             }
             catch
@@ -86,7 +86,7 @@ namespace OrderManagementBLL.Services
             await _unitOfWork.BeginTransactionAsync();
             try
             {
-                await _unitOfWork.OrderItemRepository.UpdateAsync(item, _unitOfWork.Transaction);
+                await _unitOfWork.OrderItemRepository.UpdateAsync(item);
                 await _unitOfWork.CommitAsync();
             }
             catch
@@ -115,7 +115,7 @@ namespace OrderManagementBLL.Services
             await _unitOfWork.BeginTransactionAsync();
             try
             {
-                await _unitOfWork.OrderItemRepository.UpdateAsync(item, _unitOfWork.Transaction);
+                await _unitOfWork.OrderItemRepository.UpdateAsync(item);
                 await _unitOfWork.CommitAsync();
             }
             catch

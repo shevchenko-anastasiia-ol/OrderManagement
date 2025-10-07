@@ -4,11 +4,8 @@ using MarketplaceDAL.Repositories.Interfaces;
 
 namespace MarketplaceDAL.UnitOfWork;
 
-public interface IUnitOfWork : IDisposable
+public interface IUnitOfWork : IAsyncDisposable
 {
-    IDbConnection Connection { get; }
-    IDbTransaction? Transaction { get; }
-    
     ICustomerRepository CustomerRepository { get; }
     IOrderRepository OrderRepository { get; }
     IOrderItemRepository OrderItemRepository { get; }
@@ -19,6 +16,6 @@ public interface IUnitOfWork : IDisposable
     Task BeginTransactionAsync(CancellationToken cancellationToken = default);
     Task CommitAsync(CancellationToken cancellationToken = default);
     Task RollbackAsync(CancellationToken cancellationToken = default);
-    void Dispose();
+
     
 }

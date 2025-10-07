@@ -9,35 +9,38 @@ namespace MarketplaceDAL.Repositories
     public class CustomerRepository : ICustomerRepository
     {
         private readonly IDbConnection _connection;
+        protected readonly IDbTransaction? _transaction;
 
-        public CustomerRepository(IDbConnection connection)
+        public CustomerRepository(IDbConnection connection, IDbTransaction? transaction = null)
         {
             _connection = connection;
+            _transaction = transaction;
+            
         }
 
-        public async Task AddAsync(Customer entity, IDbTransaction? transaction = null)
+        public async Task AddAsync(Customer entity, CancellationToken ct = default)
         {
             var sql = @"INSERT INTO Customers (FirstName, LastName, Email, Phone, CreatedAt, CreatedBy, IsDeleted)
                         VALUES (@FirstName, @LastName, @Email, @Phone, @CreatedAt, @CreatedBy, @IsDeleted);
                         SELECT CAST(SCOPE_IDENTITY() as bigint);";
 
-            var id = await _connection.ExecuteScalarAsync<long>(sql, entity, transaction: transaction);
+            var id = await _connection.ExecuteScalarAsync<long>(sql, entity, transaction: _transaction);
             entity.CustomerId = id;
         }
 
-        public async Task<IEnumerable<Customer>> GetAllAsync(IDbTransaction? transaction = null)
+        public async Task<IEnumerable<Customer>> GetAllAsync(CancellationToken ct = default)
         {
             var sql = "SELECT * FROM Customers WHERE IsDeleted = 0";
-            return await _connection.QueryAsync<Customer>(sql, transaction: transaction);
+            return await _connection.QueryAsync<Customer>(sql, transaction: _transaction);
         }
 
-        public async Task<Customer?> GetByIdAsync(long id, IDbTransaction? transaction = null)
+        public async Task<Customer?> GetByIdAsync(long id, CancellationToken ct = default)
         {
             var sql = "SELECT * FROM Customers WHERE CustomerId = @Id AND IsDeleted = 0";
-            return await _connection.QuerySingleOrDefaultAsync<Customer>(sql, new { Id = id }, transaction: transaction);
+            return await _connection.QuerySingleOrDefaultAsync<Customer>(sql, new { Id = id }, transaction: _transaction);
         }
 
-        public async Task UpdateAsync(Customer entity, IDbTransaction? transaction = null)
+        public async Task UpdateAsync(Customer entity, CancellationToken ct = default)
         {
             var sql = @"UPDATE Customers
                         SET FirstName = @FirstName,
@@ -49,19 +52,19 @@ namespace MarketplaceDAL.Repositories
                             IsDeleted = @IsDeleted
                         WHERE CustomerId = @CustomerId";
 
-            await _connection.ExecuteAsync(sql, entity, transaction: transaction);
+            await _connection.ExecuteAsync(sql, entity, transaction: _transaction);
         }
         
-        public async Task DeleteAsync(long id, IDbTransaction? transaction = null)
+        public async Task DeleteAsync(long id, CancellationToken ct = default)
         {
             var sql = "UPDATE Customers SET IsDeleted = 1, UpdatedAt = @UpdatedAt WHERE CustomerId = @Id";
-            await _connection.ExecuteAsync(sql, new { Id = id, UpdatedAt = DateTime.UtcNow }, transaction);
+            await _connection.ExecuteAsync(sql, new { Id = id, UpdatedAt = DateTime.UtcNow }, transaction: _transaction);
         }
 
-        public async Task<IEnumerable<Customer>> GetCustomersCreatedAfterAsync(DateTime date, IDbTransaction? transaction = null)
+        public async Task<IEnumerable<Customer>> GetCustomersCreatedAfterAsync(DateTime date, CancellationToken ct = default)
         {
             var sql = "SELECT * FROM Customers WHERE CreatedAt > @Date AND IsDeleted = 0";
-            return await _connection.QueryAsync<Customer>(sql, new { Date = date }, transaction: transaction);
+            return await _connection.QueryAsync<Customer>(sql, new { Date = date }, transaction: _transaction);
         }
         
         public async Task<Customer> GetByIdempotencyTokenAsync(string idempotencyToken)
@@ -70,7 +73,7 @@ namespace MarketplaceDAL.Repositories
             return await _connection.QueryFirstOrDefaultAsync<Customer>(sql, new { Token = idempotencyToken });
         }
 
-        public async Task<Customer> GetCustomerWithOrdersAsync(long customerId, IDbTransaction? transaction = null)
+        public async Task<Customer> GetCustomerWithOrdersAsync(long customerId, CancellationToken ct = default)
         {
             var sql = @"
                 SELECT c.*, o.OrderId, o.CustomerId AS OrderCustomerId, o.OrderDate, o.Status, o.TotalAmount
@@ -98,7 +101,7 @@ namespace MarketplaceDAL.Repositories
                 },
                 new { CustomerId = customerId },
                 splitOn: "OrderId",
-                transaction: transaction
+                transaction: _transaction
             );
 
             return lookup.Values.FirstOrDefault()!;

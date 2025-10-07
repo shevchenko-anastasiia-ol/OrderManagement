@@ -9,59 +9,109 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c3e03ffc-4c5c-4416-a298-a8db756913f1" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/.idea.Marketplace/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/.idea.OrderManagement/.idea/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/.idea.OrderManagement/.idea/.name" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/.idea.OrderManagement/.idea/dataSources.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/.idea.OrderManagement/.idea/encodings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/.idea.OrderManagement/.idea/indexLayout.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/.idea.OrderManagement/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Marketplace/Class1.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Marketplace/Marketplace.csproj" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/OrderManagement.sln" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/OrderManagementAPI/OrderManagementAPI.csproj" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/OrderManagementAPI/Program.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/OrderManagementAPI/Properties/launchSettings.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/OrderManagementAPI/WebApplication1.http" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/OrderManagementAPI/appsettings.Development.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/OrderManagementAPI/appsettings.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/OrderManagementDAL/DAL_DI.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/OrderManagementDAL/Data/OrderManagementDbContext.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/OrderManagementDAL/Models/Customer.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/OrderManagementDAL/Models/Order.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/OrderManagementDAL/Models/OrderItem.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/OrderManagementDAL/Models/Payment.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/OrderManagementDAL/Models/Product.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/OrderManagementDAL/Models/Shipment.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/OrderManagementDAL/OrderManagementDAL.csproj" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/OrderManagementDAL/Repositories/CustomerRepository.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/OrderManagementDAL/Repositories/GenericRepository.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/OrderManagementDAL/Repositories/Interfaces/ICustomerRepository.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/OrderManagementDAL/Repositories/Interfaces/IGenericRepository.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/OrderManagementDAL/Repositories/Interfaces/IOrderItemRepository.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/OrderManagementDAL/Repositories/Interfaces/IOrderRepository.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/OrderManagementDAL/Repositories/Interfaces/IPaymentRepository.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/OrderManagementDAL/Repositories/Interfaces/IProductRepository.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/OrderManagementDAL/Repositories/Interfaces/IShipmentRepository.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/OrderManagementDAL/Repositories/OrderItemRepository.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/OrderManagementDAL/Repositories/OrderRepository.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/OrderManagementDAL/Repositories/PaymentRepository.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/OrderManagementDAL/Repositories/ProductRepository.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/OrderManagementDAL/Repositories/ShipmentRepository.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/OrderManagement.sln" beforeDir="false" afterPath="$PROJECT_DIR$/OrderManagement.sln" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../StudentPortal.AppHost/obj/Debug/net9.0/Aspire/references/StudentPortal_Enrollment_Api.ProjectMetadata.g.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../../StudentPortal.AppHost/obj/Debug/net9.0/Aspire/references/StudentPortal_Enrollment_Api.ProjectMetadata.g.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../StudentPortal.AppHost/obj/Debug/net9.0/Aspire/references/StudentPortal_Enrollment_BLL.ProjectMetadata.g.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../../StudentPortal.AppHost/obj/Debug/net9.0/Aspire/references/StudentPortal_Enrollment_BLL.ProjectMetadata.g.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../StudentPortal.AppHost/obj/Debug/net9.0/Aspire/references/StudentPortal_Enrollment_DAL.ProjectMetadata.g.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../../StudentPortal.AppHost/obj/Debug/net9.0/Aspire/references/StudentPortal_Enrollment_DAL.ProjectMetadata.g.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../StudentPortal.AppHost/obj/Debug/net9.0/Aspire/references/StudentPortal_Enrollment_Domain.ProjectMetadata.g.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../../StudentPortal.AppHost/obj/Debug/net9.0/Aspire/references/StudentPortal_Enrollment_Domain.ProjectMetadata.g.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../StudentPortal.AppHost/obj/Debug/net9.0/Aspire/references/_AppHost.ProjectMetadata.g.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../../StudentPortal.AppHost/obj/Debug/net9.0/Aspire/references/_AppHost.ProjectMetadata.g.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../StudentPortal.AppHost/obj/StudentPortal.AppHost.csproj.nuget.dgspec.json" beforeDir="false" afterPath="$PROJECT_DIR$/../../StudentPortal.AppHost/obj/StudentPortal.AppHost.csproj.nuget.dgspec.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../StudentPortal.AppHost/obj/StudentPortal.AppHost.csproj.nuget.g.props" beforeDir="false" afterPath="$PROJECT_DIR$/../../StudentPortal.AppHost/obj/StudentPortal.AppHost.csproj.nuget.g.props" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../StudentPortal.AppHost/obj/StudentPortal.AppHost.csproj.nuget.g.targets" beforeDir="false" afterPath="$PROJECT_DIR$/../../StudentPortal.AppHost/obj/StudentPortal.AppHost.csproj.nuget.g.targets" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../StudentPortal.AppHost/obj/project.assets.json" beforeDir="false" afterPath="$PROJECT_DIR$/../../StudentPortal.AppHost/obj/project.assets.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../StudentPortal.AppHost/obj/project.nuget.cache" beforeDir="false" afterPath="$PROJECT_DIR$/../../StudentPortal.AppHost/obj/project.nuget.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../StudentPortal.AppHost/obj/rider.project.restore.info" beforeDir="false" afterPath="$PROJECT_DIR$/../../StudentPortal.AppHost/obj/rider.project.restore.info" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../StudentPortal.CourseCatalogService.Apii/obj/StudentPortal.CourseCatalogService.Apii.csproj.nuget.dgspec.json" beforeDir="false" afterPath="$PROJECT_DIR$/../../StudentPortal.CourseCatalogService.Apii/obj/StudentPortal.CourseCatalogService.Apii.csproj.nuget.dgspec.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../StudentPortal.CourseCatalogService.Apii/obj/StudentPortal.CourseCatalogService.Apii.csproj.nuget.g.props" beforeDir="false" afterPath="$PROJECT_DIR$/../../StudentPortal.CourseCatalogService.Apii/obj/StudentPortal.CourseCatalogService.Apii.csproj.nuget.g.props" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../StudentPortal.CourseCatalogService.Apii/obj/StudentPortal.CourseCatalogService.Apii.csproj.nuget.g.targets" beforeDir="false" afterPath="$PROJECT_DIR$/../../StudentPortal.CourseCatalogService.Apii/obj/StudentPortal.CourseCatalogService.Apii.csproj.nuget.g.targets" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../StudentPortal.CourseCatalogService.Apii/obj/project.assets.json" beforeDir="false" afterPath="$PROJECT_DIR$/../../StudentPortal.CourseCatalogService.Apii/obj/project.assets.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../StudentPortal.CourseCatalogService.Apii/obj/project.nuget.cache" beforeDir="false" afterPath="$PROJECT_DIR$/../../StudentPortal.CourseCatalogService.Apii/obj/project.nuget.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../StudentPortal.CourseCatalogService.Apii/obj/rider.project.restore.info" beforeDir="false" afterPath="$PROJECT_DIR$/../../StudentPortal.CourseCatalogService.Apii/obj/rider.project.restore.info" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../StudentPortal.CourseCatalogService.BLL/obj/StudentPortal.CourseCatalogService.BLL.csproj.nuget.dgspec.json" beforeDir="false" afterPath="$PROJECT_DIR$/../../StudentPortal.CourseCatalogService.BLL/obj/StudentPortal.CourseCatalogService.BLL.csproj.nuget.dgspec.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../StudentPortal.CourseCatalogService.BLL/obj/StudentPortal.CourseCatalogService.BLL.csproj.nuget.g.props" beforeDir="false" afterPath="$PROJECT_DIR$/../../StudentPortal.CourseCatalogService.BLL/obj/StudentPortal.CourseCatalogService.BLL.csproj.nuget.g.props" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../StudentPortal.CourseCatalogService.BLL/obj/StudentPortal.CourseCatalogService.BLL.csproj.nuget.g.targets" beforeDir="false" afterPath="$PROJECT_DIR$/../../StudentPortal.CourseCatalogService.BLL/obj/StudentPortal.CourseCatalogService.BLL.csproj.nuget.g.targets" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../StudentPortal.CourseCatalogService.BLL/obj/project.assets.json" beforeDir="false" afterPath="$PROJECT_DIR$/../../StudentPortal.CourseCatalogService.BLL/obj/project.assets.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../StudentPortal.CourseCatalogService.BLL/obj/project.nuget.cache" beforeDir="false" afterPath="$PROJECT_DIR$/../../StudentPortal.CourseCatalogService.BLL/obj/project.nuget.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../StudentPortal.CourseCatalogService.BLL/obj/rider.project.restore.info" beforeDir="false" afterPath="$PROJECT_DIR$/../../StudentPortal.CourseCatalogService.BLL/obj/rider.project.restore.info" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../StudentPortal.CourseCatalogService.DAL/obj/StudentPortal.CourseCatalogService.DAL.csproj.nuget.dgspec.json" beforeDir="false" afterPath="$PROJECT_DIR$/../../StudentPortal.CourseCatalogService.DAL/obj/StudentPortal.CourseCatalogService.DAL.csproj.nuget.dgspec.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../StudentPortal.CourseCatalogService.DAL/obj/StudentPortal.CourseCatalogService.DAL.csproj.nuget.g.props" beforeDir="false" afterPath="$PROJECT_DIR$/../../StudentPortal.CourseCatalogService.DAL/obj/StudentPortal.CourseCatalogService.DAL.csproj.nuget.g.props" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../StudentPortal.CourseCatalogService.DAL/obj/StudentPortal.CourseCatalogService.DAL.csproj.nuget.g.targets" beforeDir="false" afterPath="$PROJECT_DIR$/../../StudentPortal.CourseCatalogService.DAL/obj/StudentPortal.CourseCatalogService.DAL.csproj.nuget.g.targets" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../StudentPortal.CourseCatalogService.DAL/obj/project.assets.json" beforeDir="false" afterPath="$PROJECT_DIR$/../../StudentPortal.CourseCatalogService.DAL/obj/project.assets.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../StudentPortal.CourseCatalogService.DAL/obj/project.nuget.cache" beforeDir="false" afterPath="$PROJECT_DIR$/../../StudentPortal.CourseCatalogService.DAL/obj/project.nuget.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../StudentPortal.CourseCatalogService.DAL/obj/rider.project.restore.info" beforeDir="false" afterPath="$PROJECT_DIR$/../../StudentPortal.CourseCatalogService.DAL/obj/rider.project.restore.info" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../StudentPortal.CourseCatalogService.Domain/obj/StudentPortal.CourseCatalogService.Domain.csproj.nuget.dgspec.json" beforeDir="false" afterPath="$PROJECT_DIR$/../../StudentPortal.CourseCatalogService.Domain/obj/StudentPortal.CourseCatalogService.Domain.csproj.nuget.dgspec.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../StudentPortal.CourseCatalogService.Domain/obj/StudentPortal.CourseCatalogService.Domain.csproj.nuget.g.props" beforeDir="false" afterPath="$PROJECT_DIR$/../../StudentPortal.CourseCatalogService.Domain/obj/StudentPortal.CourseCatalogService.Domain.csproj.nuget.g.props" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../StudentPortal.CourseCatalogService.Domain/obj/StudentPortal.CourseCatalogService.Domain.csproj.nuget.g.targets" beforeDir="false" afterPath="$PROJECT_DIR$/../../StudentPortal.CourseCatalogService.Domain/obj/StudentPortal.CourseCatalogService.Domain.csproj.nuget.g.targets" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../StudentPortal.CourseCatalogService.Domain/obj/project.assets.json" beforeDir="false" afterPath="$PROJECT_DIR$/../../StudentPortal.CourseCatalogService.Domain/obj/project.assets.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../StudentPortal.CourseCatalogService.Domain/obj/project.nuget.cache" beforeDir="false" afterPath="$PROJECT_DIR$/../../StudentPortal.CourseCatalogService.Domain/obj/project.nuget.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../StudentPortal.CourseCatalogService.Domain/obj/rider.project.restore.info" beforeDir="false" afterPath="$PROJECT_DIR$/../../StudentPortal.CourseCatalogService.Domain/obj/rider.project.restore.info" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../StudentPortal.Enrollment.Api/obj/StudentPortal.Enrollment.Api.csproj.nuget.dgspec.json" beforeDir="false" afterPath="$PROJECT_DIR$/../../StudentPortal.Enrollment.Api/obj/StudentPortal.Enrollment.Api.csproj.nuget.dgspec.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../StudentPortal.Enrollment.Api/obj/StudentPortal.Enrollment.Api.csproj.nuget.g.props" beforeDir="false" afterPath="$PROJECT_DIR$/../../StudentPortal.Enrollment.Api/obj/StudentPortal.Enrollment.Api.csproj.nuget.g.props" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../StudentPortal.Enrollment.Api/obj/StudentPortal.Enrollment.Api.csproj.nuget.g.targets" beforeDir="false" afterPath="$PROJECT_DIR$/../../StudentPortal.Enrollment.Api/obj/StudentPortal.Enrollment.Api.csproj.nuget.g.targets" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../StudentPortal.Enrollment.Api/obj/project.assets.json" beforeDir="false" afterPath="$PROJECT_DIR$/../../StudentPortal.Enrollment.Api/obj/project.assets.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../StudentPortal.Enrollment.Api/obj/project.nuget.cache" beforeDir="false" afterPath="$PROJECT_DIR$/../../StudentPortal.Enrollment.Api/obj/project.nuget.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../StudentPortal.Enrollment.Api/obj/rider.project.restore.info" beforeDir="false" afterPath="$PROJECT_DIR$/../../StudentPortal.Enrollment.Api/obj/rider.project.restore.info" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../StudentPortal.Enrollment.BLL/obj/StudentPortal.Enrollment.BLL.csproj.nuget.dgspec.json" beforeDir="false" afterPath="$PROJECT_DIR$/../../StudentPortal.Enrollment.BLL/obj/StudentPortal.Enrollment.BLL.csproj.nuget.dgspec.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../StudentPortal.Enrollment.BLL/obj/StudentPortal.Enrollment.BLL.csproj.nuget.g.props" beforeDir="false" afterPath="$PROJECT_DIR$/../../StudentPortal.Enrollment.BLL/obj/StudentPortal.Enrollment.BLL.csproj.nuget.g.props" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../StudentPortal.Enrollment.BLL/obj/StudentPortal.Enrollment.BLL.csproj.nuget.g.targets" beforeDir="false" afterPath="$PROJECT_DIR$/../../StudentPortal.Enrollment.BLL/obj/StudentPortal.Enrollment.BLL.csproj.nuget.g.targets" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../StudentPortal.Enrollment.BLL/obj/project.assets.json" beforeDir="false" afterPath="$PROJECT_DIR$/../../StudentPortal.Enrollment.BLL/obj/project.assets.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../StudentPortal.Enrollment.BLL/obj/project.nuget.cache" beforeDir="false" afterPath="$PROJECT_DIR$/../../StudentPortal.Enrollment.BLL/obj/project.nuget.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../StudentPortal.Enrollment.BLL/obj/rider.project.restore.info" beforeDir="false" afterPath="$PROJECT_DIR$/../../StudentPortal.Enrollment.BLL/obj/rider.project.restore.info" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../StudentPortal.Enrollment.DAL/obj/StudentPortal.Enrollment.DAL.csproj.nuget.dgspec.json" beforeDir="false" afterPath="$PROJECT_DIR$/../../StudentPortal.Enrollment.DAL/obj/StudentPortal.Enrollment.DAL.csproj.nuget.dgspec.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../StudentPortal.Enrollment.DAL/obj/StudentPortal.Enrollment.DAL.csproj.nuget.g.props" beforeDir="false" afterPath="$PROJECT_DIR$/../../StudentPortal.Enrollment.DAL/obj/StudentPortal.Enrollment.DAL.csproj.nuget.g.props" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../StudentPortal.Enrollment.DAL/obj/StudentPortal.Enrollment.DAL.csproj.nuget.g.targets" beforeDir="false" afterPath="$PROJECT_DIR$/../../StudentPortal.Enrollment.DAL/obj/StudentPortal.Enrollment.DAL.csproj.nuget.g.targets" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../StudentPortal.Enrollment.DAL/obj/project.assets.json" beforeDir="false" afterPath="$PROJECT_DIR$/../../StudentPortal.Enrollment.DAL/obj/project.assets.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../StudentPortal.Enrollment.DAL/obj/project.nuget.cache" beforeDir="false" afterPath="$PROJECT_DIR$/../../StudentPortal.Enrollment.DAL/obj/project.nuget.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../StudentPortal.Enrollment.DAL/obj/rider.project.restore.info" beforeDir="false" afterPath="$PROJECT_DIR$/../../StudentPortal.Enrollment.DAL/obj/rider.project.restore.info" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../StudentPortal.Enrollment.Domain/obj/StudentPortal.Enrollment.Domain.csproj.nuget.dgspec.json" beforeDir="false" afterPath="$PROJECT_DIR$/../../StudentPortal.Enrollment.Domain/obj/StudentPortal.Enrollment.Domain.csproj.nuget.dgspec.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../StudentPortal.Enrollment.Domain/obj/StudentPortal.Enrollment.Domain.csproj.nuget.g.props" beforeDir="false" afterPath="$PROJECT_DIR$/../../StudentPortal.Enrollment.Domain/obj/StudentPortal.Enrollment.Domain.csproj.nuget.g.props" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../StudentPortal.Enrollment.Domain/obj/StudentPortal.Enrollment.Domain.csproj.nuget.g.targets" beforeDir="false" afterPath="$PROJECT_DIR$/../../StudentPortal.Enrollment.Domain/obj/StudentPortal.Enrollment.Domain.csproj.nuget.g.targets" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../StudentPortal.Enrollment.Domain/obj/project.assets.json" beforeDir="false" afterPath="$PROJECT_DIR$/../../StudentPortal.Enrollment.Domain/obj/project.assets.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../StudentPortal.Enrollment.Domain/obj/project.nuget.cache" beforeDir="false" afterPath="$PROJECT_DIR$/../../StudentPortal.Enrollment.Domain/obj/project.nuget.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../StudentPortal.Enrollment.Domain/obj/rider.project.restore.info" beforeDir="false" afterPath="$PROJECT_DIR$/../../StudentPortal.Enrollment.Domain/obj/rider.project.restore.info" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="DpaMonitoringSettings">
+    <option name="firstShow" value="false" />
+  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="ROOT_SYNC" value="DONT_SYNC" />
   </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;anastasia-oleksandrivna-shevchenko&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/shevchenko-anastasiia-ol/OrderManagement.git&quot;,
+    &quot;accountId&quot;: &quot;d10db895-3c37-46a5-b4b8-33a38f230117&quot;
+  }
+}</component>
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$PROJECT_DIR$/OrderManagementAPI/Program.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/OrderManagementAPI/appsettings.json" root0="FORCE_HIGHLIGHTING" />
+    <setting file="mock://D:/nastya/.Net/Marketplace/OrderManagementBLL/Services/OrderService.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://D:/nastya/.Net/Marketplace/OrderManagementBLL/Services/OrderService.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://D:/nastya/.Net/Marketplace/OrderManagementBLL/Services/OrderService.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://D:/nastya/.Net/Marketplace/OrderManagementBLL/Services/OrderService.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://D:/nastya/.Net/Marketplace/OrderManagementBLL/Services/OrderService.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://D:/nastya/.Net/Marketplace/OrderManagementBLL/Services/OrderService.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://D:/nastya/.Net/Marketplace/OrderManagementBLL/Services/OrderService.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://D:/nastya/.Net/Marketplace/OrderManagementBLL/Services/OrderService.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://D:/nastya/.Net/Marketplace/OrderManagementBLL/Services/OrderService.cs" root0="SKIP_HIGHLIGHTING" />
   </component>
+  <component name="KubernetesApiPersistence">{}</component>
+  <component name="KubernetesApiProvider">{
+  &quot;isMigrated&quot;: true
+}</component>
+  <component name="MetaFilesCheckinStateConfiguration" checkMetaFiles="true" />
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 7
 }</component>
@@ -72,6 +122,7 @@
   </component>
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
+    &quot;.NET Launch Settings Profile.WebApplication1: http.executor&quot;: &quot;Run&quot;,
     &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
@@ -128,16 +179,84 @@
       <workItem from="1758145367119" duration="1888000" />
       <workItem from="1758147316717" duration="814000" />
       <workItem from="1758225461594" duration="841000" />
-      <workItem from="1758536389703" duration="7412000" />
+      <workItem from="1758536389703" duration="315000" />
+      <workItem from="1758544097003" duration="21000" />
+      <workItem from="1758567754233" duration="627000" />
+      <workItem from="1758572005107" duration="1666000" />
+      <workItem from="1758616187623" duration="1483000" />
+      <workItem from="1758745487729" duration="1276000" />
+      <workItem from="1758836036893" duration="1846000" />
+      <workItem from="1759090736879" duration="14457000" />
+      <workItem from="1759145311897" duration="2154000" />
+      <workItem from="1759792891562" duration="1396000" />
+      <workItem from="1759795458482" duration="7710000" />
+      <workItem from="1759871218872" duration="2702000" />
     </task>
+    <task id="LOCAL-00001" summary="Created models, repositories">
+      <option name="closed" value="true" />
+      <created>1758836624820</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1758836624820</updated>
+    </task>
+    <task id="LOCAL-00002" summary="Created first version of DTO">
+      <option name="closed" value="true" />
+      <created>1759096870470</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1759096870470</updated>
+    </task>
+    <task id="LOCAL-00003" summary="First mapping, created exceptions">
+      <option name="closed" value="true" />
+      <created>1759105168551</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1759105168551</updated>
+    </task>
+    <task id="LOCAL-00004" summary="added exceptions in services and created validators with FluentValidation">
+      <option name="closed" value="true" />
+      <created>1759107115271</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1759107115271</updated>
+    </task>
+    <task id="LOCAL-00005" summary="Updated BLL due to tasks">
+      <option name="closed" value="true" />
+      <created>1759799883892</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1759799883892</updated>
+    </task>
+    <task id="LOCAL-00006" summary="fixed API">
+      <option name="closed" value="true" />
+      <created>1759873789797</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1759873789797</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
+  <component name="UnityCheckinConfiguration" checkUnsavedScenes="true" />
   <component name="UnityProjectConfiguration" hasMinimizedUI="false" />
   <component name="VcsManagerConfiguration">
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
+    <MESSAGE value="Created models, repositories" />
+    <MESSAGE value="Created first version of DTO" />
+    <MESSAGE value="First mapping, created exceptions" />
+    <MESSAGE value="added exceptions in services and created validators with FluentValidation" />
+    <MESSAGE value="Updated BLL due to tasks" />
+    <MESSAGE value="fixed API" />
+    <option name="LAST_COMMIT_MESSAGE" value="fixed API" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

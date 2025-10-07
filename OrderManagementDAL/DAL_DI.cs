@@ -1,5 +1,5 @@
 ﻿using System.Data;
-using MarketplaceDAL.Models;
+using MarketplaceDAL.Connection;
 using MarketplaceDAL.Repositories;
 using MarketplaceDAL.Repositories.Interfaces;
 using MarketplaceDAL.UnitOfWork;
@@ -18,6 +18,8 @@ public static class DAL_DI
         var connectionString = configuration.GetConnectionString("DefaultConnection");
         
         services.AddScoped<IDbConnection>(sp => new SqlConnection(connectionString));
+        
+        services.AddScoped<IConnectionFactory>(sp => new ConnectionFactory(connectionString));
         
         services.AddScoped<ICustomerRepository, CustomerRepository>();
         services.AddScoped<IProductRepository, ProductRepository>();

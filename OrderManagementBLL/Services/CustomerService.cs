@@ -24,13 +24,13 @@ namespace OrderManagementBLL.Services
 
         public async Task<IEnumerable<CustomerDto>> GetAllCustomersAsync()
         {
-            var customers = await _unitOfWork.CustomerRepository.GetAllAsync(_unitOfWork.Transaction);
+            var customers = await _unitOfWork.CustomerRepository.GetAllAsync();
             return _mapper.Map<IEnumerable<CustomerDto>>(customers);
         }
 
         public async Task<CustomerDto> GetCustomerByIdAsync(long id)
         {
-            var customer = await _unitOfWork.CustomerRepository.GetByIdAsync(id, _unitOfWork.Transaction);
+            var customer = await _unitOfWork.CustomerRepository.GetByIdAsync(id);
             if (customer == null)
                 throw new NotFoundException($"Customer with ID {id} not found.");
 
@@ -62,7 +62,7 @@ namespace OrderManagementBLL.Services
             await _unitOfWork.BeginTransactionAsync();
             try
             {
-                await _unitOfWork.CustomerRepository.AddAsync(customer, _unitOfWork.Transaction);
+                await _unitOfWork.CustomerRepository.AddAsync(customer);
                 await _unitOfWork.CommitAsync();
             }
             catch
@@ -77,7 +77,7 @@ namespace OrderManagementBLL.Services
         // --- Update з RowVer ---
         public async Task<CustomerDto> UpdateCustomerAsync(CustomerUpdateDto dto)
         {
-            var customer = await _unitOfWork.CustomerRepository.GetByIdAsync(dto.CustomerId, _unitOfWork.Transaction);
+            var customer = await _unitOfWork.CustomerRepository.GetByIdAsync(dto.CustomerId);
             if (customer == null)
                 throw new NotFoundException($"Customer with ID {dto.CustomerId} not found.");
             if (customer.IsDeleted)
@@ -92,7 +92,7 @@ namespace OrderManagementBLL.Services
             await _unitOfWork.BeginTransactionAsync();
             try
             {
-                await _unitOfWork.CustomerRepository.UpdateAsync(customer, _unitOfWork.Transaction);
+                await _unitOfWork.CustomerRepository.UpdateAsync(customer);
                 await _unitOfWork.CommitAsync();
             }
             catch
@@ -107,7 +107,7 @@ namespace OrderManagementBLL.Services
         // --- Delete з RowVer ---
         public async Task DeleteCustomerAsync(long id, byte[] rowVer, string updatedBy)
         {
-            var customer = await _unitOfWork.CustomerRepository.GetByIdAsync(id, _unitOfWork.Transaction);
+            var customer = await _unitOfWork.CustomerRepository.GetByIdAsync(id);
             if (customer == null)
                 throw new NotFoundException($"Customer with ID {id} not found.");
             if (customer.IsDeleted)
@@ -122,7 +122,7 @@ namespace OrderManagementBLL.Services
             await _unitOfWork.BeginTransactionAsync();
             try
             {
-                await _unitOfWork.CustomerRepository.UpdateAsync(customer, _unitOfWork.Transaction);
+                await _unitOfWork.CustomerRepository.UpdateAsync(customer);
                 await _unitOfWork.CommitAsync();
             }
             catch
@@ -134,13 +134,13 @@ namespace OrderManagementBLL.Services
 
         public async Task<IEnumerable<CustomerDto>> GetCustomersCreatedAfterAsync(DateTime date)
         {
-            var customers = await _unitOfWork.CustomerRepository.GetCustomersCreatedAfterAsync(date, _unitOfWork.Transaction);
+            var customers = await _unitOfWork.CustomerRepository.GetCustomersCreatedAfterAsync(date);
             return _mapper.Map<IEnumerable<CustomerDto>>(customers);
         }
 
         public async Task<CustomerDto> GetCustomerWithOrdersAsync(long customerId)
         {
-            var customer = await _unitOfWork.CustomerRepository.GetCustomerWithOrdersAsync(customerId, _unitOfWork.Transaction);
+            var customer = await _unitOfWork.CustomerRepository.GetCustomerWithOrdersAsync(customerId);
             if (customer == null)
                 throw new NotFoundException($"Customer with ID {customerId} not found.");
 

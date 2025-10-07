@@ -7,17 +7,17 @@ namespace MarketplaceDAL.Repositories.Interfaces
 {
     public interface IShipmentRepository
     {
-        Task AddAsync(Shipment entity, IDbTransaction? transaction = null);
-        Task UpdateAsync(Shipment entity, IDbTransaction? transaction = null);
-        Task<Shipment?> GetByIdAsync(long id, IDbTransaction? transaction = null);
-        Task<IEnumerable<Shipment>> GetAllAsync(IDbTransaction? transaction = null);
-        Task DeleteAsync(long id, IDbTransaction? transaction = null);
+        Task AddAsync(Shipment entity, CancellationToken ct = default);
+        Task UpdateAsync(Shipment entity, CancellationToken ct = default);
+        Task<Shipment?> GetByIdAsync(long id, CancellationToken ct = default);
+        Task<IEnumerable<Shipment>> GetAllAsync(CancellationToken ct = default);
+        Task DeleteAsync(long id, CancellationToken ct = default);
 
-        Task<IEnumerable<Shipment>> GetShipmentsByOrderIdAsync(long orderId, IDbTransaction? transaction = null);
-        Task<IEnumerable<Shipment>> GetShipmentsByStatusAsync(string status, IDbTransaction? transaction = null);
-        Task<Shipment?> GetLatestShipmentForOrderAsync(long orderId, IDbTransaction? transaction = null);
-        Task<int> CountShipmentsByCarrierAsync(string carrier, IDbTransaction? transaction = null);
-        Task<List<string>> GetDistinctCarriersAsync(IDbTransaction? transaction = null);
+        Task<IEnumerable<Shipment>> GetShipmentsByOrderIdAsync(long orderId, CancellationToken ct = default);
+        Task<IEnumerable<Shipment>> GetShipmentsByStatusAsync(string status, CancellationToken ct = default);
+        Task<Shipment?> GetLatestShipmentForOrderAsync(long orderId, CancellationToken ct = default);
+        Task<int> CountShipmentsByCarrierAsync(string carrier, CancellationToken ct = default);
+        Task<List<string>> GetDistinctCarriersAsync(CancellationToken ct = default);
         Task<Shipment> GetByIdempotencyTokenAsync(string idempotencyToken);
     }
 }

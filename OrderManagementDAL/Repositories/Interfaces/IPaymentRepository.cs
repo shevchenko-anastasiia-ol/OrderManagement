@@ -8,14 +8,14 @@ namespace MarketplaceDAL.Repositories.Interfaces
     public interface IPaymentRepository
     {
         Task<Payment> GetByIdempotencyTokenAsync(string idempotencyToken);
-        Task AddAsync(Payment entity, IDbTransaction? transaction = null);
-        Task UpdateAsync(Payment entity, IDbTransaction? transaction = null);
-        Task<Payment?> GetByIdAsync(long id, IDbTransaction? transaction = null);
-        Task<IEnumerable<Payment>> GetAllAsync(IDbTransaction? transaction = null);
-        Task DeleteAsync(long id, IDbTransaction? transaction = null);
+        Task AddAsync(Payment entity, CancellationToken ct = default);
+        Task UpdateAsync(Payment entity, CancellationToken ct = default);
+        Task<Payment?> GetByIdAsync(long id, CancellationToken ct = default);
+        Task<IEnumerable<Payment>> GetAllAsync(CancellationToken ct = default);
+        Task DeleteAsync(long id, CancellationToken ct = default);
 
-        Task<IEnumerable<Payment>> GetPaymentsByOrderIdAsync(long orderId, IDbTransaction? transaction = null);
-        Task<IEnumerable<Payment>> GetPaymentsByStatusAsync(string status, IDbTransaction? transaction = null);
-        Task<Payment?> GetLatestPaymentForOrderAsync(long orderId, IDbTransaction? transaction = null);
+        Task<IEnumerable<Payment>> GetPaymentsByOrderIdAsync(long orderId, CancellationToken ct = default);
+        Task<IEnumerable<Payment>> GetPaymentsByStatusAsync(string status, CancellationToken ct = default);
+        Task<Payment?> GetLatestPaymentForOrderAsync(long orderId, CancellationToken ct = default);
     }
 }

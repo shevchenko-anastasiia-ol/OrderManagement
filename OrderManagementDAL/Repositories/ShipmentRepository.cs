@@ -11,23 +11,25 @@ namespace MarketplaceDAL.Repositories
     public class ShipmentRepository : IShipmentRepository
     {
         private readonly IDbConnection _connection;
+        protected readonly IDbTransaction? _transaction;
 
-        public ShipmentRepository(IDbConnection connection)
+        public ShipmentRepository(IDbConnection connection, IDbTransaction? transaction = null)
         {
             _connection = connection;
+            _transaction = transaction;
         }
 
-        public async Task AddAsync(Shipment entity, IDbTransaction? transaction = null)
+        public async Task AddAsync(Shipment entity, CancellationToken ct = default)
         {
             var sql = @"INSERT INTO Shipments 
                         (OrderId, ShipmentDate, TrackingNumber, Carrier, Status, AddressLine1, AddressLine2, City, Region, PostalCode, Country, CreatedAt, CreatedBy, IsDeleted)
                         VALUES (@OrderId, @ShipmentDate, @TrackingNumber, @Carrier, @Status, @AddressLine1, @AddressLine2, @City, @Region, @PostalCode, @Country, @CreatedAt, @CreatedBy, @IsDeleted);
                         SELECT CAST(SCOPE_IDENTITY() as bigint);";
 
-            entity.ShipmentId = await _connection.ExecuteScalarAsync<long>(sql, entity, transaction: transaction);
+            entity.ShipmentId = await _connection.ExecuteScalarAsync<long>(sql, entity, transaction: _transaction);
         }
 
-        public async Task UpdateAsync(Shipment entity, IDbTransaction? transaction = null)
+        public async Task UpdateAsync(Shipment entity, CancellationToken ct = default)
         {
             var sql = @"UPDATE Shipments
                         SET OrderId = @OrderId,
@@ -45,46 +47,46 @@ namespace MarketplaceDAL.Repositories
                             UpdatedBy = @UpdatedBy
                         WHERE ShipmentId = @ShipmentId";
 
-            await _connection.ExecuteAsync(sql, entity, transaction: transaction);
+            await _connection.ExecuteAsync(sql, entity, transaction: _transaction);
         }
 
-        public async Task DeleteAsync(long id, IDbTransaction? transaction = null)
+        public async Task DeleteAsync(long id, CancellationToken ct = default)
         {
             var sql = "UPDATE Shipments SET IsDeleted = 1, UpdatedAt = @UpdatedAt WHERE ShipmentId = @Id";
-            await _connection.ExecuteAsync(sql, new { Id = id, UpdatedAt = System.DateTime.UtcNow }, transaction: transaction);
+            await _connection.ExecuteAsync(sql, new { Id = id, UpdatedAt = System.DateTime.UtcNow }, transaction: _transaction);
         }
 
-        public async Task<IEnumerable<Shipment>> GetAllAsync(IDbTransaction? transaction = null)
+        public async Task<IEnumerable<Shipment>> GetAllAsync(CancellationToken ct = default)
         {
             var sql = "SELECT * FROM Shipments WHERE IsDeleted = 0";
-            return await _connection.QueryAsync<Shipment>(sql, transaction: transaction);
+            return await _connection.QueryAsync<Shipment>(sql, transaction: _transaction);
         }
 
-        public async Task<Shipment?> GetByIdAsync(long id, IDbTransaction? transaction = null)
+        public async Task<Shipment?> GetByIdAsync(long id, CancellationToken ct = default)
         {
             var sql = "SELECT * FROM Shipments WHERE ShipmentId = @Id AND IsDeleted = 0";
-            return await _connection.QuerySingleOrDefaultAsync<Shipment>(sql, new { Id = id }, transaction: transaction);
+            return await _connection.QuerySingleOrDefaultAsync<Shipment>(sql, new { Id = id }, transaction: _transaction);
         }
 
-        public async Task<IEnumerable<Shipment>> GetShipmentsByOrderIdAsync(long orderId, IDbTransaction? transaction = null)
+        public async Task<IEnumerable<Shipment>> GetShipmentsByOrderIdAsync(long orderId, CancellationToken ct = default)
         {
             var sql = "SELECT * FROM Shipments WHERE OrderId = @OrderId AND IsDeleted = 0";
-            return await _connection.QueryAsync<Shipment>(sql, new { OrderId = orderId }, transaction: transaction);
+            return await _connection.QueryAsync<Shipment>(sql, new { OrderId = orderId }, transaction: _transaction);
         }
 
-        public async Task<IEnumerable<Shipment>> GetShipmentsByStatusAsync(string status, IDbTransaction? transaction = null)
+        public async Task<IEnumerable<Shipment>> GetShipmentsByStatusAsync(string status, CancellationToken ct = default)
         {
             var sql = "SELECT * FROM Shipments WHERE Status = @Status AND IsDeleted = 0";
-            return await _connection.QueryAsync<Shipment>(sql, new { Status = status }, transaction: transaction);
+            return await _connection.QueryAsync<Shipment>(sql, new { Status = status }, transaction: _transaction);
         }
 
-        public async Task<Shipment?> GetLatestShipmentForOrderAsync(long orderId, IDbTransaction? transaction = null)
+        public async Task<Shipment?> GetLatestShipmentForOrderAsync(long orderId, CancellationToken ct = default)
         {
             var sql = @"SELECT TOP 1 * FROM Shipments 
                         WHERE OrderId = @OrderId AND IsDeleted = 0
                         ORDER BY ShipmentDate DESC";
 
-            return await _connection.QuerySingleOrDefaultAsync<Shipment>(sql, new { OrderId = orderId }, transaction: transaction);
+            return await _connection.QuerySingleOrDefaultAsync<Shipment>(sql, new { OrderId = orderId }, transaction: _transaction);
         }
         public async Task<Shipment> GetByIdempotencyTokenAsync(string idempotencyToken)
         {
@@ -92,16 +94,16 @@ namespace MarketplaceDAL.Repositories
             return await _connection.QueryFirstOrDefaultAsync<Shipment>(sql, new { Token = idempotencyToken });
         }
 
-        public async Task<int> CountShipmentsByCarrierAsync(string carrier, IDbTransaction? transaction = null)
+        public async Task<int> CountShipmentsByCarrierAsync(string carrier, CancellationToken ct = default)
         {
             var sql = "SELECT COUNT(*) FROM Shipments WHERE Carrier = @Carrier AND IsDeleted = 0";
-            return await _connection.ExecuteScalarAsync<int>(sql, new { Carrier = carrier }, transaction: transaction);
+            return await _connection.ExecuteScalarAsync<int>(sql, new { Carrier = carrier }, transaction: _transaction);
         }
 
-        public async Task<List<string>> GetDistinctCarriersAsync(IDbTransaction? transaction = null)
+        public async Task<List<string>> GetDistinctCarriersAsync(CancellationToken ct = default)
         {
             var sql = "SELECT DISTINCT Carrier FROM Shipments WHERE IsDeleted = 0";
-            var result = await _connection.QueryAsync<string>(sql, transaction: transaction);
+            var result = await _connection.QueryAsync<string>(sql, transaction: _transaction);
             return result.ToList();
         }
     }

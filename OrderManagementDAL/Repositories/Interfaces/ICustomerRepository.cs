@@ -9,12 +9,12 @@ namespace MarketplaceDAL.Repositories
     public interface ICustomerRepository
     {
         Task<Customer> GetByIdempotencyTokenAsync(string idempotencyToken);
-        Task AddAsync(Customer entity, IDbTransaction? transaction = null);
-        Task UpdateAsync(Customer entity, IDbTransaction? transaction = null);
-        Task<Customer?> GetByIdAsync(long id, IDbTransaction? transaction = null);
-        Task<IEnumerable<Customer>> GetAllAsync(IDbTransaction? transaction = null);
-        Task<IEnumerable<Customer>> GetCustomersCreatedAfterAsync(DateTime date, IDbTransaction? transaction = null);
-        Task<Customer> GetCustomerWithOrdersAsync(long customerId, IDbTransaction? transaction = null);
-        Task DeleteAsync(long id, IDbTransaction? transaction = null);
+        Task AddAsync(Customer entity, CancellationToken ct = default);
+        Task UpdateAsync(Customer entity, CancellationToken ct = default);
+        Task<Customer?> GetByIdAsync(long id, CancellationToken ct = default);
+        Task<IEnumerable<Customer>> GetAllAsync(CancellationToken ct = default);
+        Task<IEnumerable<Customer>> GetCustomersCreatedAfterAsync(DateTime date, CancellationToken ct = default);
+        Task<Customer> GetCustomerWithOrdersAsync(long customerId, CancellationToken ct = default);
+        Task DeleteAsync(long id, CancellationToken ct = default);
     }
 }

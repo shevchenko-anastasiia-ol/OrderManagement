@@ -9,13 +9,13 @@ namespace MarketplaceDAL.Repositories.Interfaces
     public interface IOrderItemRepository
     {
         Task<OrderItem> GetByIdempotencyTokenAsync(string idempotencyToken);
-        Task AddAsync(OrderItem entity, IDbTransaction? transaction = null);
-        Task UpdateAsync(OrderItem entity, IDbTransaction? transaction = null);
-        Task<OrderItem?> GetByIdAsync(long id, IDbTransaction? transaction = null);
-        Task<IEnumerable<OrderItem>> GetAllAsync(IDbTransaction? transaction = null);
-        Task DeleteAsync(long id, IDbTransaction? transaction = null);
+        Task AddAsync(OrderItem entity, CancellationToken ct = default);
+        Task UpdateAsync(OrderItem entity, CancellationToken ct = default);
+        Task<OrderItem?> GetByIdAsync(long id, CancellationToken ct = default);
+        Task<IEnumerable<OrderItem>> GetAllAsync(CancellationToken ct = default);
+        Task DeleteAsync(long id, CancellationToken ct = default);
 
-        Task<IEnumerable<OrderItem>> GetByOrderIdAsync(long orderId, IDbTransaction? transaction = null);
-        Task<IEnumerable<OrderItem>> GetCreatedAfterAsync(DateTime date, IDbTransaction? transaction = null);
+        Task<IEnumerable<OrderItem>> GetByOrderIdAsync(long orderId, CancellationToken ct = default);
+        Task<IEnumerable<OrderItem>> GetCreatedAfterAsync(DateTime date, CancellationToken ct = default);
     }
 }

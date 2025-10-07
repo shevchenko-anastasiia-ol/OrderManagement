@@ -1,7 +1,5 @@
 using MarketplaceDAL;
-using MarketplaceDAL.UnitOfWork;
 using Microsoft.AspNetCore.Diagnostics;
-using Microsoft.EntityFrameworkCore;
 using OrderManagementBLL;
 using Serilog;
 using System.Net;
@@ -19,14 +17,12 @@ Log.Logger = new LoggerConfiguration()
 
 builder.Host.UseSerilog();
 
-// --- Configuration ---
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
 // --- DAL ---
-builder.Services.AddDataAccess(builder.Configuration); // твій DAL_DI
+builder.Services.AddDataAccess(builder.Configuration); 
 
 // --- BLL ---
-builder.Services.AddBusinessServices(builder.Configuration); // твій Bll_DI
+builder.Services.AddBusinessServices(builder.Configuration); 
 
 builder.Services.AddAutoMapper(typeof(OrderManagementBLL.MappingProfiles.CustomerMappingProfile).Assembly);
 
@@ -40,7 +36,7 @@ builder.Services.AddSwaggerGen();
 // --- ProblemDetails Middleware ---
 builder.Services.Configure<ApiBehaviorOptions>(options =>
 {
-    options.SuppressModelStateInvalidFilter = true; // щоб можна було кастомно повертати 400
+    options.SuppressModelStateInvalidFilter = true; 
 });
 
 var app = builder.Build();

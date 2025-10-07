@@ -11,23 +11,25 @@ namespace MarketplaceDAL.Repositories
     public class ProductRepository : IProductRepository
     {
         private readonly IDbConnection _connection;
+        protected readonly IDbTransaction? _transaction;
 
-        public ProductRepository(IDbConnection connection)
+        public ProductRepository(IDbConnection connection, IDbTransaction? transaction = null)
         {
             _connection = connection;
+            _transaction = transaction;
         }
 
-        public async Task AddAsync(Product entity, IDbTransaction? transaction = null)
+        public async Task AddAsync(Product entity, CancellationToken ct = default)
         {
             var sql = @"INSERT INTO Products 
                         (ProductName, Description, Price, StockQuantity, CreatedAt, CreatedBy, IsDeleted)
                         VALUES (@ProductName, @Description, @Price, @StockQuantity, @CreatedAt, @CreatedBy, @IsDeleted);
                         SELECT CAST(SCOPE_IDENTITY() as bigint);";
 
-            entity.ProductId = await _connection.ExecuteScalarAsync<long>(sql, entity, transaction: transaction);
+            entity.ProductId = await _connection.ExecuteScalarAsync<long>(sql, entity, transaction: _transaction);
         }
 
-        public async Task UpdateAsync(Product entity, IDbTransaction? transaction = null)
+        public async Task UpdateAsync(Product entity, CancellationToken ct = default)
         {
             var sql = @"UPDATE Products
                         SET ProductName = @ProductName,
@@ -38,52 +40,52 @@ namespace MarketplaceDAL.Repositories
                             UpdatedBy = @UpdatedBy
                         WHERE ProductId = @ProductId";
 
-            await _connection.ExecuteAsync(sql, entity, transaction: transaction);
+            await _connection.ExecuteAsync(sql, entity, transaction: _transaction);
         }
 
-        public async Task DeleteAsync(long id, IDbTransaction? transaction = null)
+        public async Task DeleteAsync(long id, CancellationToken ct = default)
         {
             var sql = "UPDATE Products SET IsDeleted = 1, UpdatedAt = @UpdatedAt WHERE ProductId = @Id";
-            await _connection.ExecuteAsync(sql, new { Id = id, UpdatedAt = System.DateTime.UtcNow }, transaction: transaction);
+            await _connection.ExecuteAsync(sql, new { Id = id, UpdatedAt = System.DateTime.UtcNow }, transaction: _transaction);
         }
 
-        public async Task<IEnumerable<Product>> GetAllAsync(IDbTransaction? transaction = null)
+        public async Task<IEnumerable<Product>> GetAllAsync(CancellationToken ct = default)
         {
             var sql = "SELECT * FROM Products WHERE IsDeleted = 0";
-            return await _connection.QueryAsync<Product>(sql, transaction: transaction);
+            return await _connection.QueryAsync<Product>(sql, transaction: _transaction);
         }
 
-        public async Task<Product?> GetByIdAsync(long id, IDbTransaction? transaction = null)
+        public async Task<Product?> GetByIdAsync(long id, CancellationToken ct = default)
         {
             var sql = "SELECT * FROM Products WHERE ProductId = @Id AND IsDeleted = 0";
-            return await _connection.QuerySingleOrDefaultAsync<Product>(sql, new { Id = id }, transaction: transaction);
+            return await _connection.QuerySingleOrDefaultAsync<Product>(sql, new { Id = id }, transaction: _transaction);
         }
 
-        public async Task<IEnumerable<Product>> GetProductsByPriceRangeAsync(decimal minPrice, decimal maxPrice, IDbTransaction? transaction = null)
+        public async Task<IEnumerable<Product>> GetProductsByPriceRangeAsync(decimal minPrice, decimal maxPrice, CancellationToken ct = default)
         {
             var sql = "SELECT * FROM Products WHERE Price BETWEEN @Min AND @Max AND IsDeleted = 0";
-            return await _connection.QueryAsync<Product>(sql, new { Min = minPrice, Max = maxPrice }, transaction: transaction);
+            return await _connection.QueryAsync<Product>(sql, new { Min = minPrice, Max = maxPrice }, transaction: _transaction);
         }
 
-        public async Task<IEnumerable<Product>> GetProductsInStockAsync(IDbTransaction? transaction = null)
+        public async Task<IEnumerable<Product>> GetProductsInStockAsync(CancellationToken ct = default)
         {
             var sql = "SELECT * FROM Products WHERE StockQuantity > 0 AND IsDeleted = 0";
-            return await _connection.QueryAsync<Product>(sql, transaction: transaction);
+            return await _connection.QueryAsync<Product>(sql, transaction: _transaction);
         }
 
-        public async Task<IEnumerable<Product>> FindProductsByNameAsync(string name, IDbTransaction? transaction = null)
+        public async Task<IEnumerable<Product>> FindProductsByNameAsync(string name, CancellationToken ct = default)
         {
             var sql = "SELECT * FROM Products WHERE ProductName LIKE @Name AND IsDeleted = 0";
-            return await _connection.QueryAsync<Product>(sql, new { Name = $"%{name}%" }, transaction: transaction);
+            return await _connection.QueryAsync<Product>(sql, new { Name = $"%{name}%" }, transaction: _transaction);
         }
 
-        public async Task<IEnumerable<Product>> GetAvailableProductsAsync(IDbTransaction? transaction = null)
+        public async Task<IEnumerable<Product>> GetAvailableProductsAsync(CancellationToken ct = default)
         {
             var sql = "SELECT * FROM Products WHERE StockQuantity > 0 AND IsDeleted = 0";
-            return await _connection.QueryAsync<Product>(sql, transaction: transaction);
+            return await _connection.QueryAsync<Product>(sql, transaction: _transaction);
         }
 
-        public async Task<Product?> GetProductWithOrderItemsAsync(long productId, IDbTransaction? transaction = null)
+        public async Task<Product?> GetProductWithOrderItemsAsync(long productId, CancellationToken ct = default)
         {
             var sql = @"
                 SELECT p.*, oi.OrderItemId, oi.OrderId, oi.Quantity, oi.UnitPrice
@@ -111,7 +113,7 @@ namespace MarketplaceDAL.Repositories
                 },
                 new { ProductId = productId },
                 splitOn: "OrderItemId",
-                transaction: transaction
+                transaction: _transaction
             );
 
             return productDict.Values.FirstOrDefault();
@@ -122,16 +124,16 @@ namespace MarketplaceDAL.Repositories
             var sql = "SELECT * FROM Products WHERE IdempotencyToken = @Token AND IsDeleted = 0";
             return await _connection.QueryFirstOrDefaultAsync<Product>(sql, new { Token = idempotencyToken });
         }
-        public async Task<int> CountProductsInStockAsync(IDbTransaction? transaction = null)
+        public async Task<int> CountProductsInStockAsync(CancellationToken ct = default)
         {
             var sql = "SELECT COUNT(*) FROM Products WHERE StockQuantity > 0 AND IsDeleted = 0";
-            return await _connection.ExecuteScalarAsync<int>(sql, transaction: transaction);
+            return await _connection.ExecuteScalarAsync<int>(sql, transaction: _transaction);
         }
 
-        public async Task<List<string>> GetDistinctProductNamesAsync(IDbTransaction? transaction = null)
+        public async Task<List<string>> GetDistinctProductNamesAsync(CancellationToken ct = default)
         {
             var sql = "SELECT DISTINCT ProductName FROM Products WHERE IsDeleted = 0";
-            var result = await _connection.QueryAsync<string>(sql, transaction: transaction);
+            var result = await _connection.QueryAsync<string>(sql,transaction: _transaction);
             return result.ToList();
         }
     }

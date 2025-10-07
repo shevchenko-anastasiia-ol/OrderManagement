@@ -12,10 +12,12 @@ namespace MarketplaceDAL.Repositories
     public class OrderRepository : IOrderRepository
     {
         private readonly IDbConnection _connection;
+        protected readonly IDbTransaction? _transaction;
 
-        public OrderRepository(IDbConnection connection)
+        public OrderRepository(IDbConnection connection, IDbTransaction? transaction = null)
         {
             _connection = connection;
+            _transaction = transaction;
         }
         
         public async Task<Order> GetByIdempotencyTokenAsync(string idempotencyToken)
@@ -24,17 +26,17 @@ namespace MarketplaceDAL.Repositories
             return await _connection.QueryFirstOrDefaultAsync<Order>(sql, new { Token = idempotencyToken });
         }
 
-        public async Task AddAsync(Order entity, IDbTransaction? transaction = null)
+        public async Task AddAsync(Order entity, CancellationToken ct = default)
         {
             var sql = @"INSERT INTO Orders 
                         (CustomerId, OrderDate, Status, TotalAmount, CreatedAt, CreatedBy, IsDeleted)
                         VALUES (@CustomerId, @OrderDate, @Status, @TotalAmount, @CreatedAt, @CreatedBy, @IsDeleted);
                         SELECT CAST(SCOPE_IDENTITY() as bigint);";
 
-            entity.OrderId = await _connection.ExecuteScalarAsync<long>(sql, entity, transaction: transaction);
+            entity.OrderId = await _connection.ExecuteScalarAsync<long>(sql, entity, transaction: _transaction);
         }
 
-        public async Task UpdateAsync(Order entity, IDbTransaction? transaction = null)
+        public async Task UpdateAsync(Order entity, CancellationToken ct = default)
         {
             var sql = @"UPDATE Orders
                         SET CustomerId = @CustomerId,
@@ -45,40 +47,40 @@ namespace MarketplaceDAL.Repositories
                             UpdatedBy = @UpdatedBy
                         WHERE OrderId = @OrderId";
 
-            await _connection.ExecuteAsync(sql, entity, transaction: transaction);
+            await _connection.ExecuteAsync(sql, entity, transaction: _transaction);
         }
 
-        public async Task DeleteAsync(long id, IDbTransaction? transaction = null)
+        public async Task DeleteAsync(long id, CancellationToken ct = default)
         {
             var sql = "UPDATE Orders SET IsDeleted = 1, UpdatedAt = @UpdatedAt WHERE OrderId = @Id";
-            await _connection.ExecuteAsync(sql, new { Id = id, UpdatedAt = DateTime.UtcNow }, transaction: transaction);
+            await _connection.ExecuteAsync(sql, new { Id = id, UpdatedAt = DateTime.UtcNow }, transaction: _transaction);
         }
 
-        public async Task<IEnumerable<Order>> GetAllAsync(IDbTransaction? transaction = null)
+        public async Task<IEnumerable<Order>> GetAllAsync(CancellationToken ct = default)
         {
             var sql = "SELECT * FROM Orders WHERE IsDeleted = 0";
-            return await _connection.QueryAsync<Order>(sql, transaction: transaction);
+            return await _connection.QueryAsync<Order>(sql, transaction: _transaction);
         }
 
-        public async Task<Order?> GetByIdAsync(long id, IDbTransaction? transaction = null)
+        public async Task<Order?> GetByIdAsync(long id, CancellationToken ct = default)
         {
             var sql = "SELECT * FROM Orders WHERE OrderId = @Id AND IsDeleted = 0";
-            return await _connection.QuerySingleOrDefaultAsync<Order>(sql, new { Id = id }, transaction: transaction);
+            return await _connection.QuerySingleOrDefaultAsync<Order>(sql, new { Id = id }, transaction: _transaction);
         }
 
-        public async Task<IEnumerable<Order>> GetOrdersByCustomerIdAsync(long customerId, IDbTransaction? transaction = null)
+        public async Task<IEnumerable<Order>> GetOrdersByCustomerIdAsync(long customerId, CancellationToken ct = default)
         {
             var sql = "SELECT * FROM Orders WHERE CustomerId = @CustomerId AND IsDeleted = 0";
-            return await _connection.QueryAsync<Order>(sql, new { CustomerId = customerId }, transaction: transaction);
+            return await _connection.QueryAsync<Order>(sql, new { CustomerId = customerId }, transaction: _transaction);
         }
 
-        public async Task<IEnumerable<Order>> GetOrdersByStatusAsync(string status, IDbTransaction? transaction = null)
+        public async Task<IEnumerable<Order>> GetOrdersByStatusAsync(string status, CancellationToken ct = default)
         {
             var sql = "SELECT * FROM Orders WHERE Status = @Status AND IsDeleted = 0";
-            return await _connection.QueryAsync<Order>(sql, new { Status = status }, transaction: transaction);
+            return await _connection.QueryAsync<Order>(sql, new { Status = status }, transaction: _transaction);
         }
 
-        public async Task<Order> GetOrderWithDetailsAsync(long orderId, IDbTransaction? transaction = null)
+        public async Task<Order> GetOrderWithDetailsAsync(long orderId, CancellationToken ct = default)
         {
             var sql = @"
                 SELECT o.*, 
@@ -118,7 +120,7 @@ namespace MarketplaceDAL.Repositories
                     return currentOrder;
                 },
                 new { OrderId = orderId },
-                transaction: transaction,
+                transaction: _transaction,
                 splitOn: "OrderItemId,PaymentId,ShipmentId"
             );
 
