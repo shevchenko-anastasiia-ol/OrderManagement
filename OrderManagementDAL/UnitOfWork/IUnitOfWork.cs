@@ -6,6 +6,9 @@ namespace MarketplaceDAL.UnitOfWork;
 
 public interface IUnitOfWork : IDisposable
 {
+    IDbConnection Connection { get; }
+    IDbTransaction? Transaction { get; }
+    
     ICustomerRepository CustomerRepository { get; }
     IOrderRepository OrderRepository { get; }
     IOrderItemRepository OrderItemRepository { get; }
@@ -13,11 +16,9 @@ public interface IUnitOfWork : IDisposable
     IPaymentRepository PaymentRepository { get; }
     IShipmentRepository ShipmentRepository { get; }
     
-    Task BeginTransactionAsync(IsolationLevel isolationLevel = IsolationLevel.ReadCommitted,
-        CancellationToken cancellationToken = default);
-
+    Task BeginTransactionAsync(CancellationToken cancellationToken = default);
     Task CommitAsync(CancellationToken cancellationToken = default);
     Task RollbackAsync(CancellationToken cancellationToken = default);
-
-    Task<int> SaveAsync(CancellationToken cancellationToken = default);
+    void Dispose();
+    
 }

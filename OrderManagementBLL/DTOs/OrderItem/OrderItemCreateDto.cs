@@ -6,4 +6,5 @@ public class OrderItemCreateDto
     public int Quantity { get; set; }
     public decimal UnitPrice { get; set; }
     public string CreatedBy { get; set; }
+    public string IdempotencyToken { get; set; }  
 }

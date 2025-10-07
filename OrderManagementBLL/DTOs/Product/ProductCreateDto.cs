@@ -7,5 +7,6 @@ public class ProductCreateDto
     public decimal Price { get; set; }
     public int StockQuantity { get; set; }
     public string CreatedBy { get; set; }
+    public string IdempotencyToken { get; set; }  
     
 }

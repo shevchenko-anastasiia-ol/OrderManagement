@@ -5,124 +5,172 @@ using OrderManagementBLL.DTOs.Product;
 using OrderManagementBLL.Exceptions;
 using OrderManagementBLL.Services.Interfaces;
 
-namespace OrderManagementBLL.Services;
-
-public class ProductService : IProductService
+namespace OrderManagementBLL.Services
 {
-    private readonly IUnitOfWork _unitOfWork;
-    private readonly IMapper _mapper;
-
-    public ProductService(IUnitOfWork unitOfWork, IMapper mapper)
+    public class ProductService : IProductService
     {
-        _unitOfWork = unitOfWork;
-        _mapper = mapper;
-    }
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IMapper _mapper;
 
-    // --- CRUD ---
-    public async Task<IEnumerable<ProductDto>> GetAllAsync()
-    {
-        var products = await _unitOfWork.ProductRepository.GetAllAsync();
-        return _mapper.Map<IEnumerable<ProductDto>>(products);
-    }
+        public ProductService(IUnitOfWork unitOfWork, IMapper mapper)
+        {
+            _unitOfWork = unitOfWork;
+            _mapper = mapper;
+        }
 
-    public async Task<ProductDto> GetByIdAsync(long id)
-    {
-        var product = await _unitOfWork.ProductRepository.GetByIdAsync(id);
-        if (product == null)
-            throw new NotFoundException($"Product with ID {id} was not found.");
+        // --- CRUD ---
+        public async Task<IEnumerable<ProductDto>> GetAllAsync()
+        {
+            var products = await _unitOfWork.ProductRepository.GetAllAsync();
+            return _mapper.Map<IEnumerable<ProductDto>>(products);
+        }
 
-        return _mapper.Map<ProductDto>(product);
-    }
+        public async Task<ProductDto> GetByIdAsync(long id)
+        {
+            var product = await _unitOfWork.ProductRepository.GetByIdAsync(id);
+            if (product == null || product.IsDeleted)
+                throw new NotFoundException($"Product with ID {id} was not found.");
 
-    public async Task<ProductDto> AddAsync(ProductCreateDto dto, string createdBy)
-    {
-        if (string.IsNullOrWhiteSpace(dto.ProductName))
-            throw new ValidationException("Product name is required.");
-        if (dto.Price < 0)
-            throw new ValidationException("Product price cannot be negative.");
+            return _mapper.Map<ProductDto>(product);
+        }
 
-        var product = _mapper.Map<Product>(dto);
-        product.CreatedAt = DateTime.UtcNow;
-        product.CreatedBy = createdBy;
+        // --- Add з можливістю idempotency ---
+        public async Task<ProductDto> AddAsync(ProductCreateDto dto, string createdBy)
+        {
+            if (string.IsNullOrWhiteSpace(dto.ProductName))
+                throw new ValidationException("Product name is required.");
+            if (dto.Price < 0)
+                throw new ValidationException("Product price cannot be negative.");
 
-        await _unitOfWork.ProductRepository.AddAsync(product);
-        await _unitOfWork.SaveAsync();
+            // Якщо є IdempotencyToken або унікальний ключ, перевірка на дублювання
+            if (!string.IsNullOrEmpty(dto.IdempotencyToken))
+            {
+                var existingProduct = await _unitOfWork.ProductRepository
+                    .GetByIdempotencyTokenAsync(dto.IdempotencyToken);
+                if (existingProduct != null)
+                    return _mapper.Map<ProductDto>(existingProduct);
+            }
 
-        return _mapper.Map<ProductDto>(product);
-    }
+            var product = _mapper.Map<Product>(dto);
+            product.CreatedAt = DateTime.UtcNow;
+            product.CreatedBy = createdBy ?? "system";
+            product.IsDeleted = false;
 
-    public async Task<ProductDto> UpdateAsync(ProductUpdateDto dto, string updatedBy)
-    {
-        var product = await _unitOfWork.ProductRepository.GetByIdAsync(dto.ProductId);
-        if (product == null)
-            throw new NotFoundException($"Product with ID {dto.ProductId} was not found.");
+            await _unitOfWork.BeginTransactionAsync();
+            try
+            {
+                await _unitOfWork.ProductRepository.AddAsync(product, _unitOfWork.Transaction);
+                await _unitOfWork.CommitAsync();
+            }
+            catch
+            {
+                await _unitOfWork.RollbackAsync();
+                throw;
+            }
 
-        _mapper.Map(dto, product);
-        product.UpdatedAt = DateTime.UtcNow;
-        product.UpdatedBy = updatedBy;
+            return _mapper.Map<ProductDto>(product);
+        }
 
-        await _unitOfWork.ProductRepository.UpdateAsync(product);
-        await _unitOfWork.SaveAsync();
+        // --- Update з оптимістичною конкуренцією ---
+        public async Task<ProductDto> UpdateAsync(ProductUpdateDto dto, string updatedBy)
+        {
+            var product = await _unitOfWork.ProductRepository.GetByIdAsync(dto.ProductId);
+            if (product == null || product.IsDeleted)
+                throw new NotFoundException($"Product with ID {dto.ProductId} was not found or deleted.");
 
-        return _mapper.Map<ProductDto>(product);
-    }
+            if (dto.RowVer != null && !product.RowVer.SequenceEqual(dto.RowVer))
+                throw new BusinessConflictException("The product has been modified by another user.");
 
-    public async Task DeleteAsync(long id)
-    {
-        var product = await _unitOfWork.ProductRepository.GetByIdAsync(id);
-        if (product == null)
-            throw new NotFoundException($"Product with ID {id} was not found.");
+            _mapper.Map(dto, product);
+            product.UpdatedAt = DateTime.UtcNow;
+            product.UpdatedBy = updatedBy ?? "system";
 
-        product.IsDeleted = true;
-        product.UpdatedAt = DateTime.UtcNow;
+            await _unitOfWork.BeginTransactionAsync();
+            try
+            {
+                await _unitOfWork.ProductRepository.UpdateAsync(product, _unitOfWork.Transaction);
+                await _unitOfWork.CommitAsync();
+            }
+            catch
+            {
+                await _unitOfWork.RollbackAsync();
+                throw;
+            }
 
-        await _unitOfWork.ProductRepository.UpdateAsync(product);
-        await _unitOfWork.SaveAsync();
-    }
+            return _mapper.Map<ProductDto>(product);
+        }
 
-    // --- Спеціальні методи ---
-    public async Task<IEnumerable<ProductDto>> GetProductsByPriceRangeAsync(decimal minPrice, decimal maxPrice)
-    {
-        if (minPrice < 0 || maxPrice < 0)
-            throw new ValidationException("Price range cannot be negative.");
-        if (minPrice > maxPrice)
-            throw new ValidationException("Min price cannot be greater than max price.");
+        // --- Delete з оптимістичною конкуренцією ---
+        public async Task DeleteAsync(long id, byte[] rowVer = null, string updatedBy = null)
+        {
+            var product = await _unitOfWork.ProductRepository.GetByIdAsync(id);
+            if (product == null || product.IsDeleted)
+                throw new NotFoundException("Product is already deleted or does not exist.");
 
-        var products = await _unitOfWork.ProductRepository.GetProductsByPriceRangeAsync(minPrice, maxPrice);
-        return _mapper.Map<IEnumerable<ProductDto>>(products);
-    }
+            if (rowVer != null && !product.RowVer.SequenceEqual(rowVer))
+                throw new BusinessConflictException("The product has been modified by another user.");
 
-    public async Task<IEnumerable<ProductDto>> GetProductsInStockAsync()
-    {
-        var products = await _unitOfWork.ProductRepository.GetProductsInStockAsync();
-        return _mapper.Map<IEnumerable<ProductDto>>(products);
-    }
+            product.IsDeleted = true;
+            product.UpdatedAt = DateTime.UtcNow;
+            product.UpdatedBy = updatedBy ?? "system";
 
-    public async Task<IEnumerable<ProductDto>> FindProductsByNameAsync(string name)
-    {
-        if (string.IsNullOrWhiteSpace(name))
-            throw new ValidationException("Product name cannot be empty.");
+            await _unitOfWork.BeginTransactionAsync();
+            try
+            {
+                await _unitOfWork.ProductRepository.UpdateAsync(product, _unitOfWork.Transaction);
+                await _unitOfWork.CommitAsync();
+            }
+            catch
+            {
+                await _unitOfWork.RollbackAsync();
+                throw;
+            }
+        }
 
-        var products = await _unitOfWork.ProductRepository.FindProductsByNameAsync(name);
-        return _mapper.Map<IEnumerable<ProductDto>>(products);
-    }
+        // --- Спеціальні методи ---
+        public async Task<IEnumerable<ProductDto>> GetProductsByPriceRangeAsync(decimal minPrice, decimal maxPrice)
+        {
+            if (minPrice < 0 || maxPrice < 0)
+                throw new ValidationException("Price range cannot be negative.");
+            if (minPrice > maxPrice)
+                throw new ValidationException("Min price cannot be greater than max price.");
 
-    public async Task<int> CountProductsInStockAsync()
-    {
-        return await _unitOfWork.ProductRepository.CountProductsInStockAsync();
-    }
+            var products = await _unitOfWork.ProductRepository.GetProductsByPriceRangeAsync(minPrice, maxPrice);
+            return _mapper.Map<IEnumerable<ProductDto>>(products);
+        }
 
-    public async Task<List<string>> GetDistinctProductNamesAsync()
-    {
-        return await _unitOfWork.ProductRepository.GetDistinctProductNamesAsync();
-    }
+        public async Task<IEnumerable<ProductDto>> GetProductsInStockAsync()
+        {
+            var products = await _unitOfWork.ProductRepository.GetProductsInStockAsync();
+            return _mapper.Map<IEnumerable<ProductDto>>(products);
+        }
 
-    public async Task<ProductDto> GetProductWithOrderItemsAsync(long productId)
-    {
-        var product = await _unitOfWork.ProductRepository.GetProductWithOrderItemsAsync(productId);
-        if (product == null)
-            throw new NotFoundException($"Product with ID {productId} was not found.");
+        public async Task<IEnumerable<ProductDto>> FindProductsByNameAsync(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+                throw new ValidationException("Product name cannot be empty.");
 
-        return _mapper.Map<ProductDto>(product);
+            var products = await _unitOfWork.ProductRepository.FindProductsByNameAsync(name);
+            return _mapper.Map<IEnumerable<ProductDto>>(products);
+        }
+
+        public async Task<int> CountProductsInStockAsync()
+        {
+            return await _unitOfWork.ProductRepository.CountProductsInStockAsync();
+        }
+
+        public async Task<List<string>> GetDistinctProductNamesAsync()
+        {
+            return await _unitOfWork.ProductRepository.GetDistinctProductNamesAsync();
+        }
+
+        public async Task<ProductDto> GetProductWithOrderItemsAsync(long productId)
+        {
+            var product = await _unitOfWork.ProductRepository.GetProductWithOrderItemsAsync(productId);
+            if (product == null)
+                throw new NotFoundException($"Product with ID {productId} was not found.");
+
+            return _mapper.Map<ProductDto>(product);
+        }
     }
 }

@@ -7,4 +7,5 @@ public class CustomerCreateDto
     public string Email { get; set; }
     public string Phone { get; set; }
     public string CreatedBy { get; set; }
+    public string IdempotencyToken { get; set; }  
 }

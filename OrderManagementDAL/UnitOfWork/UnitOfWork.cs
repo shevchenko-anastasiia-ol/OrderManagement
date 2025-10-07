@@ -1,91 +1,86 @@
 ﻿using System.Data;
+using System.Data.SqlClient;
 using System.Threading;
 using System.Threading.Tasks;
 using MarketplaceDAL.Repositories;
 using MarketplaceDAL.Repositories.Interfaces;
-using Microsoft.EntityFrameworkCore.Storage;
-using OrderManagementDAL.Data;
+using Microsoft.Data.SqlClient;
 
-namespace MarketplaceDAL.UnitOfWork;
-
-public class UnitOfWork: IUnitOfWork
+namespace MarketplaceDAL.UnitOfWork
 {
-    private readonly OrderManagementDbContext _context;
-    private IDbContextTransaction? _transaction;
-    
-    public ICustomerRepository CustomerRepository {get; private set;}
-    public IOrderRepository OrderRepository {get; private set;}
-    public IOrderItemRepository OrderItemRepository {get; private set;}
-    public IProductRepository ProductRepository {get; private set;}
-    public IPaymentRepository PaymentRepository {get; private set;}
-    public IShipmentRepository ShipmentRepository {get; private set;}
+    public class UnitOfWork : IUnitOfWork
+    {
+        private readonly IDbConnection _connection;
+        private IDbTransaction? _transaction;
 
-    public UnitOfWork(OrderManagementDbContext context,
-        ICustomerRepository customerRepository,
-        IOrderRepository orderRepository,
-        IOrderItemRepository orderItemRepository,
-        IProductRepository productRepository,
-        IPaymentRepository paymentRepository,
-        IShipmentRepository shipmentRepository)
-    {
-        _context = context;
-        CustomerRepository = customerRepository;
-        OrderRepository = orderRepository;
-        OrderItemRepository = orderItemRepository;
-        ProductRepository = productRepository;
-        PaymentRepository = paymentRepository;
-        ShipmentRepository = shipmentRepository;
-    }
-    
-    public async Task BeginTransactionAsync(IsolationLevel isolationLevel = IsolationLevel.ReadCommitted,
-        CancellationToken cancellationToken = default)
-    {
-        if (_transaction != null)
+        public ICustomerRepository CustomerRepository { get; }
+        public IOrderRepository OrderRepository { get; }
+        public IOrderItemRepository OrderItemRepository { get; }
+        public IProductRepository ProductRepository { get; }
+        public IPaymentRepository PaymentRepository { get; }
+        public IShipmentRepository ShipmentRepository { get; }
+
+        public UnitOfWork(string connectionString,
+            ICustomerRepository customerRepository,
+            IOrderRepository orderRepository,
+            IOrderItemRepository orderItemRepository,
+            IProductRepository productRepository,
+            IPaymentRepository paymentRepository,
+            IShipmentRepository shipmentRepository)
         {
-            throw new InvalidOperationException("Транзакція вже активна. Завершіть поточну транзакцію перед початком нової.");
+            _connection = new SqlConnection(connectionString);
+
+            CustomerRepository = customerRepository;
+            OrderRepository = orderRepository;
+            OrderItemRepository = orderItemRepository;
+            ProductRepository = productRepository;
+            PaymentRepository = paymentRepository;
+            ShipmentRepository = shipmentRepository;
         }
 
-        _transaction = await _context.Database.BeginTransactionAsync(cancellationToken);
-    }
-
-    public async Task CommitAsync(CancellationToken cancellationToken = default)
-    {
-        try
+        public async Task BeginTransactionAsync(CancellationToken cancellationToken = default)
         {
-            await _context.SaveChangesAsync(cancellationToken);
-
             if (_transaction != null)
+                throw new InvalidOperationException("Транзакція вже активна.");
+
+            if (_connection.State != ConnectionState.Open)
+                await (_connection as SqlConnection)!.OpenAsync(cancellationToken);
+
+            _transaction = _connection.BeginTransaction();
+        }
+
+        public async Task CommitAsync(CancellationToken cancellationToken = default)
+        {
+            try
             {
-                await _transaction.CommitAsync(cancellationToken);
-                await _transaction.DisposeAsync();
+                _transaction?.Commit();
+            }
+            catch
+            {
+                _transaction?.Rollback();
+                throw;
+            }
+            finally
+            {
+                _transaction?.Dispose();
                 _transaction = null;
             }
         }
-        catch
-        {
-            await RollbackAsync(cancellationToken);
-            throw;
-        }
-    }
 
-    public async Task RollbackAsync(CancellationToken cancellationToken = default)
-    {
-        if (_transaction != null)
+        public async Task RollbackAsync(CancellationToken cancellationToken = default)
         {
-            await _transaction.RollbackAsync(cancellationToken);
-            await _transaction.DisposeAsync();
+            _transaction?.Rollback();
+            _transaction?.Dispose();
             _transaction = null;
         }
-    }
 
-    public async Task<int> SaveAsync(CancellationToken cancellationToken = default)
-    {
-        return await _context.SaveChangesAsync(cancellationToken);
-    }
+        public IDbConnection Connection => _connection;
+        public IDbTransaction? Transaction => _transaction;
 
-    public void Dispose()
-    {
-        _transaction?.Dispose();
-        _context.Dispose();
+        public void Dispose()
+        {
+            _transaction?.Dispose();
+            _connection.Dispose();
+        }
     }
 }

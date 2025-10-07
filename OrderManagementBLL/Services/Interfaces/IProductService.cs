@@ -8,7 +8,7 @@ public interface IProductService
     Task<ProductDto> GetByIdAsync(long id);
     Task<ProductDto> AddAsync(ProductCreateDto dto, string createdBy);
     Task<ProductDto> UpdateAsync(ProductUpdateDto dto, string updatedBy);
-    Task DeleteAsync(long id);
+    Task DeleteAsync(long id, byte[] rowVer = null, string updatedBy = null);
 
     Task<IEnumerable<ProductDto>> GetProductsByPriceRangeAsync(decimal minPrice, decimal maxPrice);
     Task<IEnumerable<ProductDto>> GetProductsInStockAsync();

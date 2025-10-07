@@ -13,5 +13,6 @@ public class ShipmentCreateDto
     public string PostalCode { get; set; }
     public string Country { get; set; } = "Ukraine";
     public string CreatedBy { get; set; }
+    public string IdempotencyToken { get; set; }  
     
 }

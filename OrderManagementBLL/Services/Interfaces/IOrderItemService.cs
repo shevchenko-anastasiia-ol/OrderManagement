@@ -8,7 +8,7 @@ public interface IOrderItemService
     Task<OrderItemDto> GetByIdAsync(long id);
     Task<OrderItemDto> AddAsync(OrderItemCreateDto dto, string createdBy);
     Task<OrderItemDto> UpdateAsync(OrderItemUpdateDto dto, string updatedBy);
-    Task DeleteAsync(long id);
+    Task DeleteAsync(long id, byte[] rowVer, string updatedBy);
     Task<IEnumerable<OrderItemDto>> GetByOrderIdAsync(long orderId);
     Task<IEnumerable<OrderItemDto>> GetCreatedAfterAsync(DateTime date);
 }

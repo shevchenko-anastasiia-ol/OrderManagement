@@ -5,93 +5,139 @@ using OrderManagementBLL.DTOs.OrderItem;
 using OrderManagementBLL.Exceptions;
 using OrderManagementBLL.Services.Interfaces;
 
-namespace OrderManagementBLL.Services;
-
-public class OrderItemService : IOrderItemService
+namespace OrderManagementBLL.Services
 {
-    private readonly IUnitOfWork _unitOfWork;
-    private readonly IMapper _mapper;
-
-    public OrderItemService(IUnitOfWork unitOfWork, IMapper mapper)
+    public class OrderItemService : IOrderItemService
     {
-        _unitOfWork = unitOfWork;
-        _mapper = mapper;
-    }
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IMapper _mapper;
 
-    public async Task<IEnumerable<OrderItemDto>> GetAllAsync()
-    {
-        var items = await _unitOfWork.OrderItemRepository.GetAllAsync();
-        return _mapper.Map<IEnumerable<OrderItemDto>>(items);
-    }
+        public OrderItemService(IUnitOfWork unitOfWork, IMapper mapper)
+        {
+            _unitOfWork = unitOfWork;
+            _mapper = mapper;
+        }
 
-    public async Task<OrderItemDto> GetByIdAsync(long id)
-    {
-        var item = await _unitOfWork.OrderItemRepository.GetByIdAsync(id);
-        if (item == null)
-            throw new NotFoundException($"OrderItem with ID {id} was not found.");
+        public async Task<IEnumerable<OrderItemDto>> GetAllAsync()
+        {
+            var items = await _unitOfWork.OrderItemRepository.GetAllAsync();
+            return _mapper.Map<IEnumerable<OrderItemDto>>(items);
+        }
 
-        return _mapper.Map<OrderItemDto>(item);
-    }
+        public async Task<OrderItemDto> GetByIdAsync(long id)
+        {
+            var item = await _unitOfWork.OrderItemRepository.GetByIdAsync(id);
+            if (item == null || item.IsDeleted)
+                throw new NotFoundException($"OrderItem with ID {id} was not found.");
 
-    public async Task<OrderItemDto> AddAsync(OrderItemCreateDto dto, string createdBy)
-    {
-        if (dto.Quantity <= 0)
-            throw new ValidationException("Quantity must be greater than zero.");
+            return _mapper.Map<OrderItemDto>(item);
+        }
 
-        var item = _mapper.Map<OrderItem>(dto);
-        item.CreatedAt = DateTime.UtcNow;
-        item.CreatedBy = createdBy;
+        // --- Add з idempotency ---
+        public async Task<OrderItemDto> AddAsync(OrderItemCreateDto dto, string createdBy)
+        {
+            if (dto.Quantity <= 0)
+                throw new ValidationException("Quantity must be greater than zero.");
 
-        await _unitOfWork.OrderItemRepository.AddAsync(item);
-        await _unitOfWork.SaveAsync();
+            if (!string.IsNullOrEmpty(dto.IdempotencyToken))
+            {
+                var existingItem = await _unitOfWork.OrderItemRepository.GetByIdempotencyTokenAsync(dto.IdempotencyToken);
+                if (existingItem != null)
+                    return _mapper.Map<OrderItemDto>(existingItem);
+            }
 
-        return _mapper.Map<OrderItemDto>(item);
-    }
+            var item = _mapper.Map<OrderItem>(dto);
+            item.CreatedAt = DateTime.UtcNow;
+            item.CreatedBy = createdBy ?? "system";
+            item.IsDeleted = false;
 
-    public async Task<OrderItemDto> UpdateAsync(OrderItemUpdateDto dto, string updatedBy)
-    {
-        var item = await _unitOfWork.OrderItemRepository.GetByIdAsync(dto.OrderItemId);
-        if (item == null)
-            throw new NotFoundException($"OrderItem with ID {dto.OrderItemId} was not found.");
+            await _unitOfWork.BeginTransactionAsync();
+            try
+            {
+                await _unitOfWork.OrderItemRepository.AddAsync(item, _unitOfWork.Transaction);
+                await _unitOfWork.CommitAsync();
+            }
+            catch
+            {
+                await _unitOfWork.RollbackAsync();
+                throw;
+            }
 
-        if (dto.Quantity <= 0)
-            throw new ValidationException("Quantity must be greater than zero.");
+            return _mapper.Map<OrderItemDto>(item);
+        }
 
-        _mapper.Map(dto, item);
-        item.UpdatedAt = DateTime.UtcNow;
-        item.UpdatedBy = updatedBy;
+        // --- Update з RowVer ---
+        public async Task<OrderItemDto> UpdateAsync(OrderItemUpdateDto dto, string updatedBy)
+        {
+            var item = await _unitOfWork.OrderItemRepository.GetByIdAsync(dto.OrderItemId);
+            if (item == null || item.IsDeleted)
+                throw new NotFoundException($"OrderItem with ID {dto.OrderItemId} was not found or deleted.");
 
-        await _unitOfWork.OrderItemRepository.UpdateAsync(item);
-        await _unitOfWork.SaveAsync();
+            if (dto.Quantity.HasValue && dto.Quantity <= 0)
+                throw new ValidationException("Quantity must be greater than zero.");
 
-        return _mapper.Map<OrderItemDto>(item);
-    }
+            if (dto.RowVer != null && !item.RowVer.SequenceEqual(dto.RowVer))
+                throw new BusinessConflictException("The record has been modified by another user.");
 
-    public async Task DeleteAsync(long id)
-    {
-        var item = await _unitOfWork.OrderItemRepository.GetByIdAsync(id);
-        if (item == null)
-            throw new NotFoundException($"OrderItem with ID {id} was not found.");
+            _mapper.Map(dto, item);
+            item.UpdatedAt = DateTime.UtcNow;
+            item.UpdatedBy = updatedBy ?? "system";
 
-        item.IsDeleted = true;
-        item.UpdatedAt = DateTime.UtcNow;
+            await _unitOfWork.BeginTransactionAsync();
+            try
+            {
+                await _unitOfWork.OrderItemRepository.UpdateAsync(item, _unitOfWork.Transaction);
+                await _unitOfWork.CommitAsync();
+            }
+            catch
+            {
+                await _unitOfWork.RollbackAsync();
+                throw;
+            }
 
-        await _unitOfWork.OrderItemRepository.UpdateAsync(item);
-        await _unitOfWork.SaveAsync();
-    }
+            return _mapper.Map<OrderItemDto>(item);
+        }
 
-    public async Task<IEnumerable<OrderItemDto>> GetByOrderIdAsync(long orderId)
-    {
-        var items = await _unitOfWork.OrderItemRepository.GetByOrderIdAsync(orderId);
-        if (items == null || !items.Any())
-            throw new NotFoundException($"No OrderItems found for Order ID {orderId}.");
+        // --- Delete з RowVer ---
+        public async Task DeleteAsync(long id, byte[] rowVer, string updatedBy)
+        {
+            var item = await _unitOfWork.OrderItemRepository.GetByIdAsync(id);
+            if (item == null || item.IsDeleted)
+                throw new NotFoundException("OrderItem is already deleted or does not exist.");
 
-        return _mapper.Map<IEnumerable<OrderItemDto>>(items);
-    }
+            if (rowVer != null && !item.RowVer.SequenceEqual(rowVer))
+                throw new BusinessConflictException("The record has been modified by another user.");
 
-    public async Task<IEnumerable<OrderItemDto>> GetCreatedAfterAsync(DateTime date)
-    {
-        var items = await _unitOfWork.OrderItemRepository.GetCreatedAfterAsync(date);
-        return _mapper.Map<IEnumerable<OrderItemDto>>(items);
+            item.IsDeleted = true;
+            item.UpdatedAt = DateTime.UtcNow;
+            item.UpdatedBy = updatedBy ?? "system";
+
+            await _unitOfWork.BeginTransactionAsync();
+            try
+            {
+                await _unitOfWork.OrderItemRepository.UpdateAsync(item, _unitOfWork.Transaction);
+                await _unitOfWork.CommitAsync();
+            }
+            catch
+            {
+                await _unitOfWork.RollbackAsync();
+                throw;
+            }
+        }
+
+        public async Task<IEnumerable<OrderItemDto>> GetByOrderIdAsync(long orderId)
+        {
+            var items = await _unitOfWork.OrderItemRepository.GetByOrderIdAsync(orderId);
+            if (items == null || !items.Any())
+                throw new NotFoundException($"No OrderItems found for Order ID {orderId}.");
+
+            return _mapper.Map<IEnumerable<OrderItemDto>>(items);
+        }
+
+        public async Task<IEnumerable<OrderItemDto>> GetCreatedAfterAsync(DateTime date)
+        {
+            var items = await _unitOfWork.OrderItemRepository.GetCreatedAfterAsync(date);
+            return _mapper.Map<IEnumerable<OrderItemDto>>(items);
+        }
     }
 }

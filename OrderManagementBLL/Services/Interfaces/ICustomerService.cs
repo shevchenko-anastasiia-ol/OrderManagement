@@ -8,7 +8,7 @@ public interface ICustomerService
     Task<CustomerDto> GetCustomerByIdAsync(long id);
     Task<CustomerDto> AddCustomerAsync(CustomerCreateDto dto);
     Task<CustomerDto> UpdateCustomerAsync(CustomerUpdateDto dto);
-    Task DeleteCustomerAsync(long id);
+    Task DeleteCustomerAsync(long id,  byte[] rowVer, string updatedBy);
     Task<IEnumerable<CustomerDto>> GetCustomersCreatedAfterAsync(DateTime date);
     Task<CustomerDto> GetCustomerWithOrdersAsync(long customerId);
 }

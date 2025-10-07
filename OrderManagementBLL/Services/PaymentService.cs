@@ -5,102 +5,155 @@ using OrderManagementBLL.DTOs.Payment;
 using OrderManagementBLL.Exceptions;
 using OrderManagementBLL.Services.Interfaces;
 
-namespace OrderManagementBLL.Services;
-
-public class PaymentService : IPaymentService
+namespace OrderManagementBLL.Services
 {
-    private readonly IUnitOfWork _unitOfWork;
-    private readonly IMapper _mapper;
-
-    public PaymentService(IUnitOfWork unitOfWork, IMapper mapper)
+    public class PaymentService : IPaymentService
     {
-        _unitOfWork = unitOfWork;
-        _mapper = mapper;
-    }
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IMapper _mapper;
 
-    public async Task<IEnumerable<PaymentDto>> GetAllAsync()
-    {
-        var payments = await _unitOfWork.PaymentRepository.GetAllAsync();
-        return _mapper.Map<IEnumerable<PaymentDto>>(payments);
-    }
+        public PaymentService(IUnitOfWork unitOfWork, IMapper mapper)
+        {
+            _unitOfWork = unitOfWork;
+            _mapper = mapper;
+        }
 
-    public async Task<PaymentDto> GetByIdAsync(long id)
-    {
-        var payment = await _unitOfWork.PaymentRepository.GetByIdAsync(id);
-        if (payment == null)
-            throw new NotFoundException($"Payment with ID {id} was not found.");
+        // --- CRUD ---
+        public async Task<IEnumerable<PaymentDto>> GetAllAsync()
+        {
+            var payments = await _unitOfWork.PaymentRepository.GetAllAsync();
+            return _mapper.Map<IEnumerable<PaymentDto>>(payments);
+        }
 
-        return _mapper.Map<PaymentDto>(payment);
-    }
+        public async Task<PaymentDto> GetByIdAsync(long id)
+        {
+            var payment = await _unitOfWork.PaymentRepository.GetByIdAsync(id);
+            if (payment == null || payment.IsDeleted)
+                throw new NotFoundException($"Payment with ID {id} was not found.");
 
-    public async Task<PaymentDto> AddAsync(PaymentCreateDto dto, string createdBy)
-    {
-        if (dto.Amount <= 0)
-            throw new ValidationException("Payment amount must be greater than zero.");
+            return _mapper.Map<PaymentDto>(payment);
+        }
 
-        var payment = _mapper.Map<Payment>(dto);
-        payment.CreatedAt = DateTime.UtcNow;
-        payment.CreatedBy = createdBy;
+        public async Task<PaymentDto> AddAsync(PaymentCreateDto dto, string createdBy)
+        {
+            if (dto.Amount <= 0)
+                throw new ValidationException("Payment amount must be greater than zero.");
 
-        await _unitOfWork.PaymentRepository.AddAsync(payment);
-        await _unitOfWork.SaveAsync();
+            // --- Idempotency ---
+            if (!string.IsNullOrEmpty(dto.IdempotencyToken))
+            {
+                var existingPayment = await _unitOfWork.PaymentRepository
+                    .GetByIdempotencyTokenAsync(dto.IdempotencyToken);
 
-        return _mapper.Map<PaymentDto>(payment);
-    }
+                if (existingPayment != null)
+                    return _mapper.Map<PaymentDto>(existingPayment);
+            }
 
-    public async Task<PaymentDto> UpdateAsync(PaymentUpdateDto dto, string updatedBy)
-    {
-        var payment = await _unitOfWork.PaymentRepository.GetByIdAsync(dto.PaymentId);
-        if (payment == null)
-            throw new NotFoundException($"Payment with ID {dto.PaymentId} was not found.");
+            var payment = _mapper.Map<Payment>(dto);
+            payment.CreatedAt = DateTime.UtcNow;
+            payment.CreatedBy = createdBy ?? "system";
+            payment.IsDeleted = false;
 
-        _mapper.Map(dto, payment);
-        payment.UpdatedAt = DateTime.UtcNow;
-        payment.UpdatedBy = updatedBy;
+            await _unitOfWork.BeginTransactionAsync();
+            try
+            {
+                await _unitOfWork.PaymentRepository.AddAsync(payment, _unitOfWork.Transaction);
+                await _unitOfWork.CommitAsync();
+            }
+            catch
+            {
+                await _unitOfWork.RollbackAsync();
+                throw;
+            }
 
-        await _unitOfWork.PaymentRepository.UpdateAsync(payment);
-        await _unitOfWork.SaveAsync();
+            return _mapper.Map<PaymentDto>(payment);
+        }
 
-        return _mapper.Map<PaymentDto>(payment);
-    }
+        public async Task<PaymentDto> UpdateAsync(PaymentUpdateDto dto, string updatedBy)
+        {
+            var payment = await _unitOfWork.PaymentRepository.GetByIdAsync(dto.PaymentId);
+            if (payment == null || payment.IsDeleted)
+                throw new NotFoundException($"Payment with ID {dto.PaymentId} was not found or deleted.");
 
-    public async Task DeleteAsync(long id)
-    {
-        var payment = await _unitOfWork.PaymentRepository.GetByIdAsync(id);
-        if (payment == null)
-            throw new NotFoundException($"Payment with ID {id} was not found.");
+            // --- Optimistic concurrency ---
+            if (dto.RowVer != null && !payment.RowVer.SequenceEqual(dto.RowVer))
+                throw new BusinessConflictException("The payment has been modified by another user.");
 
-        payment.IsDeleted = true;
-        payment.UpdatedAt = DateTime.UtcNow;
+            _mapper.Map(dto, payment);
+            payment.UpdatedAt = DateTime.UtcNow;
+            payment.UpdatedBy = updatedBy ?? "system";
 
-        await _unitOfWork.PaymentRepository.UpdateAsync(payment);
-        await _unitOfWork.SaveAsync();
-    }
+            await _unitOfWork.BeginTransactionAsync();
+            try
+            {
+                await _unitOfWork.PaymentRepository.UpdateAsync(payment, _unitOfWork.Transaction);
+                await _unitOfWork.CommitAsync();
+            }
+            catch
+            {
+                await _unitOfWork.RollbackAsync();
+                throw;
+            }
 
-    public async Task<IEnumerable<PaymentDto>> GetPaymentsByOrderIdAsync(long orderId)
-    {
-        var payments = await _unitOfWork.PaymentRepository.GetPaymentsByOrderIdAsync(orderId);
-        if (payments == null || !payments.Any())
-            throw new NotFoundException($"No payments found for Order ID {orderId}.");
+            return _mapper.Map<PaymentDto>(payment);
+        }
 
-        return _mapper.Map<IEnumerable<PaymentDto>>(payments);
-    }
+        public async Task DeleteAsync(long id, byte[] rowVer, string updatedBy)
+        {
+            var payment = await _unitOfWork.PaymentRepository.GetByIdAsync(id);
+            if (payment == null || payment.IsDeleted)
+                throw new NotFoundException("Payment is already deleted or does not exist.");
 
-    public async Task<IEnumerable<PaymentDto>> GetPaymentsByStatusAsync(string status)
-    {
-        var payments = await _unitOfWork.PaymentRepository.GetPaymentsByStatusAsync(status);
-        if (payments == null || !payments.Any())
-            throw new NotFoundException($"No payments found with status '{status}'.");
+            // --- Optimistic concurrency ---
+            if (rowVer != null && !payment.RowVer.SequenceEqual(rowVer))
+                throw new BusinessConflictException("The payment has been modified by another user.");
 
-        return _mapper.Map<IEnumerable<PaymentDto>>(payments);
-    }
+            payment.IsDeleted = true;
+            payment.UpdatedAt = DateTime.UtcNow;
+            payment.UpdatedBy = updatedBy ?? "system";
 
-    public async Task<PaymentDto> GetLatestPaymentForOrderAsync(long orderId)
-    {
-        var payment = await _unitOfWork.PaymentRepository.GetLatestPaymentForOrderAsync(orderId);
-        if (payment == null)
-            throw new NotFoundException($"No payments found for Order ID {orderId}.");
+            await _unitOfWork.BeginTransactionAsync();
+            try
+            {
+                await _unitOfWork.PaymentRepository.UpdateAsync(payment, _unitOfWork.Transaction);
+                await _unitOfWork.CommitAsync();
+            }
+            catch
+            {
+                await _unitOfWork.RollbackAsync();
+                throw;
+            }
+        }
 
-        return _mapper.Map<PaymentDto>(payment);
+        // --- Спеціальні методи ---
+        public async Task<IEnumerable<PaymentDto>> GetPaymentsByOrderIdAsync(long orderId)
+        {
+            var payments = await _unitOfWork.PaymentRepository.GetPaymentsByOrderIdAsync(orderId);
+            if (payments == null || !payments.Any())
+                throw new NotFoundException($"No payments found for Order ID {orderId}.");
+
+            return _mapper.Map<IEnumerable<PaymentDto>>(payments);
+        }
+
+        public async Task<IEnumerable<PaymentDto>> GetPaymentsByStatusAsync(string status)
+        {
+            if (string.IsNullOrWhiteSpace(status))
+                throw new ValidationException("Status cannot be empty.");
+
+            var payments = await _unitOfWork.PaymentRepository.GetPaymentsByStatusAsync(status);
+            if (payments == null || !payments.Any())
+                throw new NotFoundException($"No payments found with status '{status}'.");
+
+            return _mapper.Map<IEnumerable<PaymentDto>>(payments);
+        }
+
+        public async Task<PaymentDto> GetLatestPaymentForOrderAsync(long orderId)
+        {
+            var payment = await _unitOfWork.PaymentRepository.GetLatestPaymentForOrderAsync(orderId);
+            if (payment == null)
+                throw new NotFoundException($"No payments found for Order ID {orderId}.");
+
+            return _mapper.Map<PaymentDto>(payment);
+        }
     }
 }

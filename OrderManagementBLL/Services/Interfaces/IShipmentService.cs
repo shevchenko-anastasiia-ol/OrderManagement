@@ -8,7 +8,7 @@ public interface IShipmentService
     Task<ShipmentDto> GetShipmentByIdAsync(long id);
     Task<ShipmentDto> AddShipmentAsync(ShipmentCreateDto dto, string createdBy);
     Task<ShipmentDto> UpdateShipmentAsync(ShipmentUpdateDto dto, string updatedBy);
-    Task DeleteShipmentAsync(long id);
+    Task DeleteShipmentAsync(long id, byte[] rowVer = null, string updatedBy = null);
     
     Task<IEnumerable<ShipmentDto>> GetShipmentsByOrderIdAsync(long orderId);
     Task<IEnumerable<ShipmentDto>> GetShipmentsByStatusAsync(string status);
