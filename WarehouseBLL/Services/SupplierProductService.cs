@@ -1,4 +1,5 @@
-﻿using WarehouseBLL.Services.Interfaces;
+﻿using WarehouseBLL.DTOs.SupplierProduct;
+using WarehouseBLL.Services.Interfaces;
 using WarehouseDAL.UnitOfWork;
 using WarehouseDomain.Entities;
 
@@ -13,58 +14,61 @@ public class SupplierProductService :  ISupplierProductService
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<SupplierProduct?> GetSupplierProductByIdAsync(int id)
+        public async Task<SupplierProductDto?> GetSupplierProductByIdAsync(int id)
         {
-            return await _unitOfWork.SupplierProductRepository.GetByIdAsync(id);
+            var supplierProduct = await _unitOfWork.SupplierProductRepository.GetByIdAsync(id);
+            return supplierProduct == null ? null : MapToViewDto(supplierProduct);
         }
 
-        public async Task<IEnumerable<SupplierProduct>> GetSupplierProductsBySupplierAsync(int supplierId)
+        public async Task<IEnumerable<SupplierProductDto>> GetSupplierProductsBySupplierAsync(int supplierId)
         {
-            return await _unitOfWork.SupplierProductRepository.GetBySupplierIdAsync(supplierId);
+            var supplierProducts = await _unitOfWork.SupplierProductRepository.GetBySupplierIdAsync(supplierId);
+            return supplierProducts.Select(MapToViewDto);
         }
 
-        public async Task<IEnumerable<SupplierProduct>> GetSupplierProductsByProductAsync(int productId)
+        public async Task<IEnumerable<SupplierProductDto>> GetSupplierProductsByProductAsync(int productId)
         {
-            return await _unitOfWork.SupplierProductRepository.GetByProductIdAsync(productId);
+            var supplierProducts = await _unitOfWork.SupplierProductRepository.GetByProductIdAsync(productId);
+            return supplierProducts.Select(MapToViewDto);
         }
 
-        public async Task<SupplierProduct?> GetSupplierProductAsync(int supplierId, int productId)
+        public async Task<SupplierProductDto?> GetSupplierProductAsync(int supplierId, int productId)
         {
-            return await _unitOfWork.SupplierProductRepository.GetBySupplierAndProductAsync(supplierId, productId);
+            var supplierProduct = await _unitOfWork.SupplierProductRepository.GetBySupplierAndProductAsync(supplierId, productId);
+            return supplierProduct == null ? null : MapToViewDto(supplierProduct);
         }
 
-        public async Task<SupplierProduct> AddProductToSupplierAsync(int supplierId, int productId)
+        public async Task<SupplierProductDto> AddProductToSupplierAsync(SupplierProductCreateDto dto)
         {
-            if (await SupplierProductExistsAsync(supplierId, productId))
+            if (await SupplierProductExistsAsync(dto.SupplierId, dto.ProductId))
             {
                 throw new InvalidOperationException(
-                    $"Supplier {supplierId} already supplies Product {productId}");
+                    $"Supplier {dto.SupplierId} already supplies Product {dto.ProductId}");
             }
 
             var supplierProduct = new SupplierProduct
             {
-                SupplierId = supplierId,
-                ProductId = productId,
+                SupplierId = dto.SupplierId,
+                ProductId = dto.ProductId,
                 CreatedAt = DateTime.UtcNow,
+                CreatedBy = dto.CreatedBy,
                 IsDeleted = false
             };
 
             await _unitOfWork.SupplierProductRepository.AddAsync(supplierProduct);
             await _unitOfWork.SaveChangesAsync();
 
-            return supplierProduct;
+            return MapToViewDto(supplierProduct);
         }
 
         public async Task RemoveProductFromSupplierAsync(int supplierId, int productId)
         {
-            var supplierProduct = await _unitOfWork.SupplierProductRepository
-                .GetBySupplierAndProductAsync(supplierId, productId);
-
+            var supplierProduct = await _unitOfWork.SupplierProductRepository.GetBySupplierAndProductAsync(supplierId, productId);
             if (supplierProduct != null)
             {
                 supplierProduct.IsDeleted = true;
                 supplierProduct.UpdatedAt = DateTime.UtcNow;
-                
+
                 _unitOfWork.SupplierProductRepository.Update(supplierProduct);
                 await _unitOfWork.SaveChangesAsync();
             }
@@ -75,4 +79,14 @@ public class SupplierProductService :  ISupplierProductService
             return await _unitOfWork.SupplierProductRepository.AnyAsync(
                 sp => sp.SupplierId == supplierId && sp.ProductId == productId && !sp.IsDeleted);
         }
+
+        private SupplierProductDto MapToViewDto(SupplierProduct supplierProduct) => new()
+        {
+            Id = supplierProduct.Id,
+            SupplierId = supplierProduct.SupplierId,
+            ProductId = supplierProduct.ProductId,
+            CreatedAt = supplierProduct.CreatedAt,
+            UpdatedAt = supplierProduct.UpdatedAt,
+            IsDeleted = supplierProduct.IsDeleted
+        };
 }

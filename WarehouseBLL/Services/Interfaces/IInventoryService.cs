@@ -1,18 +1,19 @@
-﻿using WarehouseDomain.Entities;
+﻿using WarehouseBLL.DTOs.Inventory;
+using WarehouseDomain.Entities;
 
 namespace WarehouseBLL.Services.Interfaces;
 
 public interface IInventoryService
 {
-    Task<Inventory?> GetInventoryByIdAsync(int id);
-    Task<Inventory?> GetInventoryWithDetailsAsync(int id);
-    Task<Inventory?> GetInventoryByWarehouseAndProductAsync(int warehouseId, int productId);
-    Task<IEnumerable<Inventory>> GetInventoryByWarehouseAsync(int warehouseId);
-    Task<IEnumerable<Inventory>> GetInventoryByProductAsync(int productId);
-    Task<IEnumerable<Inventory>> GetLowStockItemsAsync(int threshold);
-    Task<Inventory> CreateInventoryAsync(Inventory inventory);
-    Task UpdateInventoryAsync(Inventory inventory);
-    Task AdjustInventoryQuantityAsync(int id, int quantityChange);
+    Task<InventoryDto?> GetInventoryByIdAsync(int id);
+    Task<InventoryWithDetailsDto?> GetInventoryWithDetailsAsync(int id);
+    Task<InventoryDto?> GetInventoryByWarehouseAndProductAsync(int warehouseId, int productId);
+    Task<IEnumerable<InventoryDto>> GetInventoryByWarehouseAsync(int warehouseId);
+    Task<IEnumerable<InventoryDto>> GetInventoryByProductAsync(int productId);
+    Task<IEnumerable<InventoryWithDetailsDto>> GetLowStockItemsAsync(int threshold);
+    Task<InventoryDto> CreateInventoryAsync(InventoryCreateDto dto);
+    Task<InventoryDto> UpdateInventoryAsync(InventoryUpdateDto dto);
+    Task<InventoryDto> AdjustInventoryQuantityAsync(InventoryAdjustDto dto);
     Task DeleteInventoryAsync(int id);
     Task<bool> InventoryExistsAsync(int id);
     Task<int> GetTotalStockForProductAsync(int productId);

@@ -1,16 +1,17 @@
-﻿using WarehouseDomain.Entities;
+﻿using WarehouseBLL.DTOs.Supplier;
+using WarehouseDomain.Entities;
 
 namespace WarehouseBLL.Services.Interfaces;
 
 public interface ISupplierService
 {
-    Task<Supplier?> GetSupplierByIdAsync(int id);
-    Task<Supplier?> GetSupplierWithProductsAsync(int id);
-    Task<IEnumerable<Supplier>> GetAllSuppliersAsync();
-    Task<IEnumerable<Supplier>> GetSuppliersByCountryAsync(string country);
-    Task<IEnumerable<Supplier>> GetAllSuppliersWithProductsAsync();
-    Task<Supplier> CreateSupplierAsync(Supplier supplier);
-    Task UpdateSupplierAsync(Supplier supplier);
+    Task<SupplierDto?> GetSupplierByIdAsync(int id);
+    Task<SupplierWithProductDto?> GetSupplierWithProductsAsync(int id);
+    Task<IEnumerable<SupplierDto>> GetAllSuppliersAsync();
+    Task<IEnumerable<SupplierDto>> GetSuppliersByCountryAsync(string country);
+    Task<IEnumerable<SupplierWithProductDto>> GetAllSuppliersWithProductsAsync();
+    Task<SupplierDto> CreateSupplierAsync(SupplierCreateDto dto);
+    Task<SupplierDto> UpdateSupplierAsync(SupplierUpdateDto dto);
     Task DeleteSupplierAsync(int id);
     Task<bool> SupplierExistsAsync(int id);
 }

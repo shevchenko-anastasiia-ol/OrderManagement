@@ -1,96 +1,116 @@
-﻿using WarehouseBLL.Services.Interfaces;
+﻿using WarehouseBLL.DTOs.Inventory;
+using WarehouseBLL.DTOs.Product;
+using WarehouseBLL.DTOs.Warehouse;
+using WarehouseBLL.Services.Interfaces;
 using WarehouseDAL.UnitOfWork;
 using WarehouseDomain.Entities;
 
 namespace WarehouseBLL.Services;
 
 public class InventoryService : IInventoryService
-{
-    private readonly IUnitOfWork _unitOfWork;
+    {
+        private readonly IUnitOfWork _unitOfWork;
 
         public InventoryService(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<Inventory?> GetInventoryByIdAsync(int id)
+        public async Task<InventoryDto?> GetInventoryByIdAsync(int id)
         {
-            return await _unitOfWork.InventoryRepository.GetByIdAsync(id);
+            var inventory = await _unitOfWork.InventoryRepository.GetByIdAsync(id);
+            return inventory == null ? null : MapToViewDto(inventory);
         }
 
-        public async Task<Inventory?> GetInventoryWithDetailsAsync(int id)
+        public async Task<InventoryWithDetailsDto?> GetInventoryWithDetailsAsync(int id)
         {
-            return await _unitOfWork.InventoryRepository.GetByIdWithDetailsAsync(id);
+            var inventory = await _unitOfWork.InventoryRepository.GetByIdWithDetailsAsync(id);
+            return inventory == null ? null : MapToWithDetailsDto(inventory);
         }
 
-        public async Task<Inventory?> GetInventoryByWarehouseAndProductAsync(int warehouseId, int productId)
+        public async Task<InventoryDto?> GetInventoryByWarehouseAndProductAsync(int warehouseId, int productId)
         {
-            return await _unitOfWork.InventoryRepository.GetByWarehouseAndProductAsync(warehouseId, productId);
+            var inventory = await _unitOfWork.InventoryRepository.GetByWarehouseAndProductAsync(warehouseId, productId);
+            return inventory == null ? null : MapToViewDto(inventory);
         }
 
-        public async Task<IEnumerable<Inventory>> GetInventoryByWarehouseAsync(int warehouseId)
+        public async Task<IEnumerable<InventoryDto>> GetInventoryByWarehouseAsync(int warehouseId)
         {
-            return await _unitOfWork.InventoryRepository.GetByWarehouseIdAsync(warehouseId);
+            var inventories = await _unitOfWork.InventoryRepository.GetByWarehouseIdAsync(warehouseId);
+            return inventories.Select(MapToViewDto);
         }
 
-        public async Task<IEnumerable<Inventory>> GetInventoryByProductAsync(int productId)
+        public async Task<IEnumerable<InventoryDto>> GetInventoryByProductAsync(int productId)
         {
-            return await _unitOfWork.InventoryRepository.GetByProductIdAsync(productId);
+            var inventories = await _unitOfWork.InventoryRepository.GetByProductIdAsync(productId);
+            return inventories.Select(MapToViewDto);
         }
 
-        public async Task<IEnumerable<Inventory>> GetLowStockItemsAsync(int threshold)
+        public async Task<IEnumerable<InventoryWithDetailsDto>> GetLowStockItemsAsync(int threshold)
         {
-            return await _unitOfWork.InventoryRepository.GetLowStockItemsAsync(threshold);
+            var inventories = await _unitOfWork.InventoryRepository.GetLowStockItemsAsync(threshold);
+            return inventories.Select(MapToWithDetailsDto);
         }
 
-        public async Task<Inventory> CreateInventoryAsync(Inventory inventory)
+        public async Task<InventoryDto> CreateInventoryAsync(InventoryCreateDto dto)
         {
-            var existing = await GetInventoryByWarehouseAndProductAsync(
-                inventory.WarehouseId, 
-                inventory.ProductId);
-
+            var existing = await _unitOfWork.InventoryRepository.GetByWarehouseAndProductAsync(dto.WarehouseId, dto.ProductId);
             if (existing != null)
             {
                 throw new InvalidOperationException(
-                    $"Inventory already exists for Warehouse {inventory.WarehouseId} and Product {inventory.ProductId}");
+                    $"Inventory already exists for Warehouse {dto.WarehouseId} and Product {dto.ProductId}");
             }
 
-            inventory.CreatedAt = DateTime.UtcNow;
-            inventory.IsDeleted = false;
-            
+            var inventory = new Inventory
+            {
+                WarehouseId = dto.WarehouseId,
+                ProductId = dto.ProductId,
+                Quantity = dto.Quantity,
+                CreatedAt = DateTime.UtcNow,
+                CreatedBy = dto.CreatedBy,
+                IsDeleted = false
+            };
+
             await _unitOfWork.InventoryRepository.AddAsync(inventory);
             await _unitOfWork.SaveChangesAsync();
-            
-            return inventory;
+
+            return MapToViewDto(inventory);
         }
 
-        public async Task UpdateInventoryAsync(Inventory inventory)
+        public async Task<InventoryDto> UpdateInventoryAsync(InventoryUpdateDto dto)
         {
-            inventory.UpdatedAt = DateTime.UtcNow;
-            
-            _unitOfWork.InventoryRepository.Update(inventory);
-            await _unitOfWork.SaveChangesAsync();
-        }
-
-        public async Task AdjustInventoryQuantityAsync(int id, int quantityChange)
-        {
-            var inventory = await _unitOfWork.InventoryRepository.GetByIdAsync(id);
+            var inventory = await _unitOfWork.InventoryRepository.GetByIdAsync(dto.Id);
             if (inventory == null)
-            {
-                throw new InvalidOperationException($"Inventory with ID {id} not found.");
-            }
+                throw new InvalidOperationException($"Inventory with ID {dto.Id} not found.");
 
-            inventory.Quantity += quantityChange;
-            
-            if (inventory.Quantity < 0)
-            {
-                throw new InvalidOperationException("Inventory quantity cannot be negative.");
-            }
-
+            inventory.Quantity = dto.Quantity;
             inventory.UpdatedAt = DateTime.UtcNow;
-            
+            inventory.UpdatedBy = dto.UpdatedBy;
+
             _unitOfWork.InventoryRepository.Update(inventory);
             await _unitOfWork.SaveChangesAsync();
+
+            return MapToViewDto(inventory);
+        }
+
+        public async Task<InventoryDto> AdjustInventoryQuantityAsync(InventoryAdjustDto dto)
+        {
+            var inventory = await _unitOfWork.InventoryRepository.GetByIdAsync(dto.Id);
+            if (inventory == null)
+                throw new InvalidOperationException($"Inventory with ID {dto.Id} not found.");
+
+            inventory.Quantity += dto.QuantityChange;
+
+            if (inventory.Quantity < 0)
+                throw new InvalidOperationException("Inventory quantity cannot be negative.");
+
+            inventory.UpdatedAt = DateTime.UtcNow;
+            inventory.UpdatedBy = dto.UpdatedBy;
+
+            _unitOfWork.InventoryRepository.Update(inventory);
+            await _unitOfWork.SaveChangesAsync();
+
+            return MapToViewDto(inventory);
         }
 
         public async Task DeleteInventoryAsync(int id)
@@ -100,7 +120,7 @@ public class InventoryService : IInventoryService
             {
                 inventory.IsDeleted = true;
                 inventory.UpdatedAt = DateTime.UtcNow;
-                
+
                 _unitOfWork.InventoryRepository.Update(inventory);
                 await _unitOfWork.SaveChangesAsync();
             }
@@ -116,4 +136,45 @@ public class InventoryService : IInventoryService
             var inventories = await _unitOfWork.InventoryRepository.GetByProductIdAsync(productId);
             return inventories.Sum(i => i.Quantity);
         }
-}
+
+        private InventoryDto MapToViewDto(Inventory inventory) => new()
+        {
+            Id = inventory.Id,
+            WarehouseId = inventory.WarehouseId,
+            ProductId = inventory.ProductId,
+            Quantity = inventory.Quantity,
+            CreatedAt = inventory.CreatedAt,
+            UpdatedAt = inventory.UpdatedAt,
+            IsDeleted = inventory.IsDeleted
+        };
+
+        private InventoryWithDetailsDto MapToWithDetailsDto(Inventory inventory) => new()
+        {
+            Id = inventory.Id,
+            WarehouseId = inventory.WarehouseId,
+            ProductId = inventory.ProductId,
+            Quantity = inventory.Quantity,
+            CreatedAt = inventory.CreatedAt,
+            UpdatedAt = inventory.UpdatedAt,
+            IsDeleted = inventory.IsDeleted,
+            Warehouse = new WarehouseDto
+            {
+                Id = inventory.Warehouse.Id,
+                Name = inventory.Warehouse.Name,
+                Capacity = inventory.Warehouse.Capacity,
+                CreatedAt = inventory.Warehouse.CreatedAt,
+                UpdatedAt = inventory.Warehouse.UpdatedAt,
+                IsDeleted = inventory.Warehouse.IsDeleted
+            },
+            Product = new ProductDto
+            {
+                Id = inventory.Product.Id,
+                Name = inventory.Product.Name,
+                SKU = inventory.Product.SKU,
+                Price = inventory.Product.Price,
+                CreatedAt = inventory.Product.CreatedAt,
+                UpdatedAt = inventory.Product.UpdatedAt,
+                IsDeleted = inventory.Product.IsDeleted
+            }
+        };
+    }

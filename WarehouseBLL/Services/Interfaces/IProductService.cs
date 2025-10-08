@@ -1,17 +1,18 @@
-﻿using WarehouseDomain.Entities;
+﻿using WarehouseBLL.DTOs.Product;
+using WarehouseDomain.Entities;
 
 namespace WarehouseBLL.Services.Interfaces;
 
 public interface IProductService
 {
-    Task<Product?> GetProductByIdAsync(int id);
-    Task<Product?> GetProductBySkuAsync(string sku);
-    Task<Product?> GetProductWithInventoryAsync(int id);
-    Task<IEnumerable<Product>> GetAllProductsAsync();
-    Task<IEnumerable<Product>> GetProductsByPriceRangeAsync(decimal minPrice, decimal maxPrice);
-    Task<IEnumerable<Product>> GetProductsWithSuppliersAsync();
-    Task<Product> CreateProductAsync(Product product);
-    Task UpdateProductAsync(Product product);
+    Task<ProductDto?> GetProductByIdAsync(int id);
+    Task<ProductDto?> GetProductBySkuAsync(string sku);
+    Task<ProductWithInventoryDto?> GetProductWithInventoryAsync(int id);
+    Task<IEnumerable<ProductDto>> GetAllProductsAsync();
+    Task<IEnumerable<ProductDto>> GetProductsByPriceRangeAsync(decimal minPrice, decimal maxPrice);
+    Task<IEnumerable<ProductWithSuppliersDto>> GetProductsWithSuppliersAsync();
+    Task<ProductDto> CreateProductAsync(ProductCreateDto dto);
+    Task<ProductDto> UpdateProductAsync(ProductUpdateDto dto);
     Task DeleteProductAsync(int id);
     Task<bool> ProductExistsAsync(int id);
     Task<bool> SkuExistsAsync(string sku);
