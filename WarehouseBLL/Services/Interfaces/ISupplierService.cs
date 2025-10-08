@@ -1,4 +1,5 @@
 ﻿using WarehouseBLL.DTOs.Supplier;
+using WarehouseBLL.Helpers;
 using WarehouseDomain.Entities;
 
 namespace WarehouseBLL.Services.Interfaces;
@@ -14,4 +15,5 @@ public interface ISupplierService
     Task<SupplierDto> UpdateSupplierAsync(SupplierUpdateDto dto);
     Task DeleteSupplierAsync(int id);
     Task<bool> SupplierExistsAsync(int id);
+    Task<PagedResult<SupplierDto>> GetSuppliersPagedAsync(SupplierQueryParams queryParams);
 }

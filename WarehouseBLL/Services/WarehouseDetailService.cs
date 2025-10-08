@@ -1,4 +1,5 @@
-﻿using WarehouseBLL.DTOs.WarehouseDetail;
+﻿using AutoMapper;
+using WarehouseBLL.DTOs.WarehouseDetail;
 using WarehouseBLL.Services.Interfaces;
 using WarehouseDAL.UnitOfWork;
 using WarehouseDomain.Entities;
@@ -8,22 +9,24 @@ namespace WarehouseBLL.Services;
 public class WarehouseDetailService : IWarehouseDetailService
 {
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IMapper _mapper;
 
-        public WarehouseDetailService(IUnitOfWork unitOfWork)
+        public WarehouseDetailService(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
+            _mapper = mapper;
         }
 
         public async Task<WarehouseDetailDto?> GetWarehouseDetailsByIdAsync(int id)
         {
             var details = await _unitOfWork.WarehouseDetailRepository.GetByIdAsync(id);
-            return details == null ? null : MapToViewDto(details);
+            return _mapper.Map<WarehouseDetailDto>(details);
         }
 
         public async Task<WarehouseDetailDto?> GetWarehouseDetailsByWarehouseIdAsync(int warehouseId)
         {
             var details = await _unitOfWork.WarehouseDetailRepository.GetByWarehouseIdAsync(warehouseId);
-            return details == null ? null : MapToViewDto(details);
+            return _mapper.Map<WarehouseDetailDto>(details);
         }
 
         public async Task<WarehouseDetailDto> CreateWarehouseDetailsAsync(WarehouseDetailCreateDto dto)
@@ -35,20 +38,12 @@ public class WarehouseDetailService : IWarehouseDetailService
                     $"Warehouse details already exist for Warehouse {dto.WarehouseId}");
             }
 
-            var details = new WarehouseDetail
-            {
-                WarehouseId = dto.WarehouseId,
-                Address = dto.Address,
-                Manager = dto.Manager,
-                CreatedAt = DateTime.UtcNow,
-                CreatedBy = dto.CreatedBy,
-                IsDeleted = false
-            };
+            var details = _mapper.Map<WarehouseDetail>(dto);
 
             await _unitOfWork.WarehouseDetailRepository.AddAsync(details);
             await _unitOfWork.SaveChangesAsync();
 
-            return MapToViewDto(details);
+            return _mapper.Map<WarehouseDetailDto>(details);
         }
 
         public async Task<WarehouseDetailDto> UpdateWarehouseDetailsAsync(WarehouseDetailUpdateDto dto)
@@ -57,15 +52,12 @@ public class WarehouseDetailService : IWarehouseDetailService
             if (details == null)
                 throw new InvalidOperationException($"Warehouse details with ID {dto.Id} not found.");
 
-            details.Address = dto.Address;
-            details.Manager = dto.Manager;
-            details.UpdatedAt = DateTime.UtcNow;
-            details.UpdatedBy = dto.UpdatedBy;
+            _mapper.Map(dto, details);
 
             _unitOfWork.WarehouseDetailRepository.Update(details);
             await _unitOfWork.SaveChangesAsync();
 
-            return MapToViewDto(details);
+            return _mapper.Map<WarehouseDetailDto>(details);
         }
 
         public async Task DeleteWarehouseDetailsAsync(int id)

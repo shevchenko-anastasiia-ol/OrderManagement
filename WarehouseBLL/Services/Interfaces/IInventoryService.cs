@@ -1,4 +1,5 @@
 ﻿using WarehouseBLL.DTOs.Inventory;
+using WarehouseBLL.Helpers;
 using WarehouseDomain.Entities;
 
 namespace WarehouseBLL.Services.Interfaces;
@@ -17,4 +18,5 @@ public interface IInventoryService
     Task DeleteInventoryAsync(int id);
     Task<bool> InventoryExistsAsync(int id);
     Task<int> GetTotalStockForProductAsync(int productId);
+    Task<PagedResult<InventoryWithDetailsDto>> GetInventoryPagedAsync(InventoryQueryParams queryParams);
 }

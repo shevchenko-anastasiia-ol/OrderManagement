@@ -11,44 +11,50 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c3e03ffc-4c5c-4416-a298-a8db756913f1" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/WarehouseBLL/DTOs/Inventory/InventoryAdjustDto.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/WarehouseBLL/DTOs/Inventory/InventoryCreateDto.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/WarehouseBLL/DTOs/Inventory/InventoryDto.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/WarehouseBLL/DTOs/Inventory/InventoryUpdateDto.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/WarehouseBLL/DTOs/Inventory/InventoryWithDetailsDto.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/WarehouseBLL/DTOs/Product/ProductCreateDto.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/WarehouseBLL/DTOs/Product/ProductDto.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/WarehouseBLL/DTOs/Product/ProductUpdateDto.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/WarehouseBLL/DTOs/Product/ProductWithInventoryDto.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/WarehouseBLL/DTOs/Product/ProductWithSuppliersDto.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/WarehouseBLL/DTOs/Supplier/SupplierCreateDto.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/WarehouseBLL/DTOs/Supplier/SupplierDto.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/WarehouseBLL/DTOs/Supplier/SupplierUpdateDto.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/WarehouseBLL/DTOs/Supplier/SupplierWithProductDto.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/WarehouseBLL/DTOs/SupplierProduct/SupplierProductCreateDto.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/WarehouseBLL/DTOs/SupplierProduct/SupplierProductDto.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/WarehouseBLL/DTOs/SupplierProduct/SupplierProductUpdateDto.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/WarehouseBLL/DTOs/Warehouse/WarehouseCreateDto.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/WarehouseBLL/DTOs/Warehouse/WarehouseDto.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/WarehouseBLL/DTOs/Warehouse/WarehouseUpdateDto.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/WarehouseBLL/DTOs/Warehouse/WarehouseWithDetailDto.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/WarehouseBLL/DTOs/Warehouse/WarehouseWithInventoryDto.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/WarehouseBLL/DTOs/WarehouseDetail/WarehouseDetailCreateDto.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/WarehouseBLL/DTOs/WarehouseDetail/WarehouseDetailDto.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/WarehouseBLL/DTOs/WarehouseDetail/WarehouseDetailUpdateDto.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/WarehouseDAL/Data/WarehouseSeedDb.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/WarehouseAPI/Middleware/GlobalExceptionHandlerMiddleware.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/WarehouseBLL/Exceptions/BadRequestException.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/WarehouseBLL/Exceptions/ConflictException.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/WarehouseBLL/Exceptions/NotFoundException.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/WarehouseBLL/Helpers/FilterParams.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/WarehouseBLL/Helpers/InventoryQueryParams.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/WarehouseBLL/Helpers/PagedResult.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/WarehouseBLL/Helpers/PaginationParams.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/WarehouseBLL/Helpers/ProductQueryParams.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/WarehouseBLL/Helpers/QueryableExtensions.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/WarehouseBLL/Helpers/SortingParams.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/WarehouseBLL/Helpers/SupplierQueryParams.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/WarehouseBLL/Helpers/WarehouseQueryParams.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/WarehouseBLL/MappingProfiles/InventoryProfile.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/WarehouseBLL/MappingProfiles/ProductProfile.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/WarehouseBLL/MappingProfiles/SupplierProductProfile.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/WarehouseBLL/MappingProfiles/SupplierProfile.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/WarehouseBLL/MappingProfiles/WarehouseDetailProfile.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/WarehouseBLL/MappingProfiles/WarehouseProfile.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/WarehouseBLL/Validators/Inventory/InventoryAdjuctDtoValidator.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/WarehouseBLL/Validators/Inventory/InventoryCreateDtoValidator.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/WarehouseBLL/Validators/Inventory/InventoryUpdateDtoValidator.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/WarehouseBLL/Validators/Product/ProductCreateDtoValidator.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/WarehouseBLL/Validators/Product/ProductUpdateDtoValidator.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/WarehouseBLL/Validators/Supplier/SupplierCreateDtoValidator.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/WarehouseBLL/Validators/Supplier/SupplierUpdateDtoValidator.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/WarehouseBLL/Validators/SupplierProduct/SupplierProductCreateDtoValidator.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/WarehouseBLL/Validators/Warehouse/WarehouseCreateDtoValidator.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/WarehouseBLL/Validators/Warehouse/WarehouseUpdateDtoValidator.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/WarehouseBLL/Validators/WarehouseDetails/WarehouseDetailsCreateDtoValidator.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/WarehouseBLL/Validators/WarehouseDetails/WarehouseDetailsUpdateDtoValidator.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Marketplace/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Marketplace/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/OrderManagementBLL/OrderManagementBLL.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/OrderManagementBLL/OrderManagementBLL.csproj" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/WarehouseBLL/Services/Interfaces/IInventoryService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/WarehouseBLL/Services/Interfaces/IInventoryService.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/WarehouseBLL/Services/Interfaces/IProductService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/WarehouseBLL/Services/Interfaces/IProductService.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WarehouseBLL/Services/Interfaces/ISupplierProductService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/WarehouseBLL/Services/Interfaces/ISupplierProductService.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/WarehouseBLL/Services/Interfaces/ISupplierService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/WarehouseBLL/Services/Interfaces/ISupplierService.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WarehouseBLL/Services/Interfaces/IWarehouseDetailService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/WarehouseBLL/Services/Interfaces/IWarehouseDetailService.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/WarehouseBLL/Services/Interfaces/IWarehouseService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/WarehouseBLL/Services/Interfaces/IWarehouseService.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/WarehouseBLL/Services/InventoryService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/WarehouseBLL/Services/InventoryService.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/WarehouseBLL/Services/ProductService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/WarehouseBLL/Services/ProductService.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WarehouseBLL/Services/SupplierProductService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/WarehouseBLL/Services/SupplierProductService.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/WarehouseBLL/Services/SupplierService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/WarehouseBLL/Services/SupplierService.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WarehouseBLL/Services/WarehouseDetailService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/WarehouseBLL/Services/WarehouseDetailService.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/WarehouseBLL/Services/WarehouseService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/WarehouseBLL/Services/WarehouseService.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WarehouseDAL/WarehouseDAL.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/WarehouseDAL/WarehouseDAL.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WarehouseBLL/WarehouseBLL.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/WarehouseBLL/WarehouseBLL.csproj" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../../StudentPortal.AppHost/obj/Debug/net9.0/StudentPortal.AppHost.AssemblyInfo.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../../StudentPortal.AppHost/obj/Debug/net9.0/StudentPortal.AppHost.AssemblyInfo.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../../StudentPortal.AppHost/obj/Debug/net9.0/StudentPortal.AppHost.AssemblyInfoInputs.cache" beforeDir="false" afterPath="$PROJECT_DIR$/../../StudentPortal.AppHost/obj/Debug/net9.0/StudentPortal.AppHost.AssemblyInfoInputs.cache" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../../StudentPortal.AppHost/obj/rider.project.model.nuget.info" beforeDir="false" afterPath="$PROJECT_DIR$/../../StudentPortal.AppHost/obj/rider.project.model.nuget.info" afterDir="false" />
@@ -104,15 +110,7 @@
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$PROJECT_DIR$/OrderManagementAPI/Program.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/OrderManagementAPI/appsettings.json" root0="FORCE_HIGHLIGHTING" />
-    <setting file="mock://D:/nastya/.Net/Marketplace/OrderManagementBLL/Services/OrderService.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock://D:/nastya/.Net/Marketplace/OrderManagementBLL/Services/OrderService.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock://D:/nastya/.Net/Marketplace/OrderManagementBLL/Services/OrderService.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock://D:/nastya/.Net/Marketplace/OrderManagementBLL/Services/OrderService.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock://D:/nastya/.Net/Marketplace/OrderManagementBLL/Services/OrderService.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock://D:/nastya/.Net/Marketplace/OrderManagementBLL/Services/OrderService.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock://D:/nastya/.Net/Marketplace/OrderManagementBLL/Services/OrderService.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock://D:/nastya/.Net/Marketplace/OrderManagementBLL/Services/OrderService.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock://D:/nastya/.Net/Marketplace/OrderManagementBLL/Services/OrderService.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://D:/nastya/.Net/Marketplace/WarehouseBLL/Services/Interfaces/IInventoryService.cs" root0="SKIP_HIGHLIGHTING" />
   </component>
   <component name="KubernetesApiPersistence">{}</component>
   <component name="KubernetesApiProvider">{
@@ -229,7 +227,7 @@
       <workItem from="1759795458482" duration="7710000" />
       <workItem from="1759871218872" duration="2702000" />
       <workItem from="1759889180150" duration="173000" />
-      <workItem from="1759959163203" duration="248000" />
+      <workItem from="1759959163203" duration="5356000" />
     </task>
     <task id="LOCAL-00001" summary="Created models, repositories">
       <option name="closed" value="true" />
@@ -279,7 +277,15 @@
       <option name="project" value="LOCAL" />
       <updated>1759873789797</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="Upgraded services due to DTO">
+      <option name="closed" value="true" />
+      <created>1759959820158</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1759959820158</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -295,7 +301,8 @@
     <MESSAGE value="added exceptions in services and created validators with FluentValidation" />
     <MESSAGE value="Updated BLL due to tasks" />
     <MESSAGE value="fixed API" />
-    <option name="LAST_COMMIT_MESSAGE" value="fixed API" />
+    <MESSAGE value="Upgraded services due to DTO" />
+    <option name="LAST_COMMIT_MESSAGE" value="Upgraded services due to DTO" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

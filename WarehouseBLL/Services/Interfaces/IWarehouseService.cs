@@ -1,4 +1,5 @@
 ﻿using WarehouseBLL.DTOs.Warehouse;
+using WarehouseBLL.Helpers;
 using WarehouseDomain.Entities;
 
 namespace WarehouseBLL.Services.Interfaces;
@@ -15,4 +16,5 @@ public interface IWarehouseService
     Task<WarehouseDto> UpdateWarehouseAsync(WarehouseUpdateDto dto);
     Task DeleteWarehouseAsync(int id);
     Task<bool> WarehouseExistsAsync(int id);
+    Task<PagedResult<WarehouseDto>> GetWarehousesPagedAsync(WarehouseQueryParams queryParams);
 }

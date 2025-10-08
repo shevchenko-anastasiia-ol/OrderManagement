@@ -7,10 +7,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="Extentions\" />
-    </ItemGroup>
-
-    <ItemGroup>
       <ProjectReference Include="..\OrderManagementDAL\OrderManagementDAL.csproj" />
     </ItemGroup>
 

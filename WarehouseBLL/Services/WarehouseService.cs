@@ -1,6 +1,8 @@
-﻿using WarehouseBLL.DTOs.Inventory;
+﻿using AutoMapper;
+using WarehouseBLL.DTOs.Inventory;
 using WarehouseBLL.DTOs.Warehouse;
 using WarehouseBLL.DTOs.WarehouseDetail;
+using WarehouseBLL.Helpers;
 using WarehouseBLL.Services.Interfaces;
 using WarehouseDAL.UnitOfWork;
 using WarehouseDomain.Entities;
@@ -10,63 +12,57 @@ namespace WarehouseBLL.Services;
 public class WarehouseService :  IWarehouseService
 {
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IMapper _mapper;
 
-        public WarehouseService(IUnitOfWork unitOfWork)
+        public WarehouseService(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
+            _mapper = mapper;
         }
 
         public async Task<WarehouseDto?> GetWarehouseByIdAsync(int id)
         {
             var warehouse = await _unitOfWork.WarehouseRepository.GetByIdAsync(id);
-            return warehouse == null ? null : MapToViewDto(warehouse);
+            return _mapper.Map<WarehouseDto>(warehouse);
         }
 
         public async Task<WarehouseWithDetailDto?> GetWarehouseWithDetailsAsync(int id)
         {
             var warehouse = await _unitOfWork.WarehouseRepository.GetByIdWithDetailsAsync(id);
-            return warehouse == null ? null : MapToWithDetailsDto(warehouse);
+            return _mapper.Map<WarehouseWithDetailDto>(warehouse);
         }
 
         public async Task<WarehouseWithInventoryDto?> GetWarehouseWithInventoryAsync(int id)
         {
             var warehouse = await _unitOfWork.WarehouseRepository.GetByIdWithInventoryAsync(id);
-            return warehouse == null ? null : MapToWithInventoryDto(warehouse);
+            return _mapper.Map<WarehouseWithInventoryDto>(warehouse);
         }
 
         public async Task<IEnumerable<WarehouseDto>> GetAllWarehousesAsync()
         {
             var warehouses = await _unitOfWork.WarehouseRepository.GetAllAsync();
-            return warehouses.Select(MapToViewDto);
+            return _mapper.Map<IEnumerable<WarehouseDto>>(warehouses);
         }
 
         public async Task<IEnumerable<WarehouseWithDetailDto>> GetAllWarehousesWithDetailsAsync()
         {
             var warehouses = await _unitOfWork.WarehouseRepository.GetAllWithDetailsAsync();
-            return warehouses.Select(MapToWithDetailsDto);
+            return _mapper.Map<IEnumerable<WarehouseWithDetailDto>>(warehouses);
         }
 
         public async Task<IEnumerable<WarehouseDto>> GetWarehousesByMinCapacityAsync(int minCapacity)
         {
             var warehouses = await _unitOfWork.WarehouseRepository.GetWarehousesByCapacityAsync(minCapacity);
-            return warehouses.Select(MapToViewDto);
+            return _mapper.Map<IEnumerable<WarehouseDto>>(warehouses);
         }
 
         public async Task<WarehouseDto> CreateWarehouseAsync(WarehouseCreateDto dto)
         {
-            var warehouse = new Warehouse
-            {
-                Name = dto.Name,
-                Capacity = dto.Capacity,
-                CreatedAt = DateTime.UtcNow,
-                CreatedBy = dto.CreatedBy,
-                IsDeleted = false
-            };
-
+            var warehouse = _mapper.Map<Warehouse>(dto);
             await _unitOfWork.WarehouseRepository.AddAsync(warehouse);
             await _unitOfWork.SaveChangesAsync();
 
-            return MapToViewDto(warehouse);
+            return _mapper.Map<WarehouseDto>(warehouse);
         }
 
         public async Task<WarehouseDto> UpdateWarehouseAsync(WarehouseUpdateDto dto)
@@ -75,15 +71,12 @@ public class WarehouseService :  IWarehouseService
             if (warehouse == null)
                 throw new InvalidOperationException($"Warehouse with ID {dto.Id} not found.");
 
-            warehouse.Name = dto.Name;
-            warehouse.Capacity = dto.Capacity;
-            warehouse.UpdatedAt = DateTime.UtcNow;
-            warehouse.UpdatedBy = dto.UpdatedBy;
-
+            _mapper.Map(dto, warehouse);
+            
             _unitOfWork.WarehouseRepository.Update(warehouse);
             await _unitOfWork.SaveChangesAsync();
 
-            return MapToViewDto(warehouse);
+            return _mapper.Map<WarehouseDto>(warehouse);
         }
 
         public async Task DeleteWarehouseAsync(int id)
@@ -153,4 +146,38 @@ public class WarehouseService :  IWarehouseService
                 IsDeleted = i.IsDeleted
             }).ToList()
         };
+
+        public async Task<PagedResult<WarehouseDto>> GetWarehousesPagedAsync(WarehouseQueryParams queryParams)
+        {
+            var query = _unitOfWork.WarehouseRepository.GetAllAsync().Result.AsQueryable();
+
+            // Filtering
+            if (!string.IsNullOrWhiteSpace(queryParams.SearchTerm))
+            {
+                query = query.Where(w => w.Name.Contains(queryParams.SearchTerm));
+            }
+
+            if (queryParams.MinCapacity.HasValue)
+            {
+                query = query.Where(w => w.Capacity >= queryParams.MinCapacity.Value);
+            }
+
+            if (queryParams.MaxCapacity.HasValue)
+            {
+                query = query.Where(w => w.Capacity <= queryParams.MaxCapacity.Value);
+            }
+
+            // Sorting
+            query = query.ApplySorting(queryParams.SortBy ?? "Name", queryParams.SortDirection);
+
+            // Pagination
+            var pagedResult = await query.ToPagedResultAsync(queryParams.Page, queryParams.PageSize);
+
+            return new PagedResult<WarehouseDto>(
+                pagedResult.Items.Select(_mapper.Map<WarehouseDto>),
+                pagedResult.TotalCount,
+                pagedResult.Page,
+                pagedResult.PageSize
+            );
+        }
 }

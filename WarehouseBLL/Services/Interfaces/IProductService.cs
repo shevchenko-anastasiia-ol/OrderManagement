@@ -1,4 +1,5 @@
 ﻿using WarehouseBLL.DTOs.Product;
+using WarehouseBLL.Helpers;
 using WarehouseDomain.Entities;
 
 namespace WarehouseBLL.Services.Interfaces;
@@ -16,4 +17,5 @@ public interface IProductService
     Task DeleteProductAsync(int id);
     Task<bool> ProductExistsAsync(int id);
     Task<bool> SkuExistsAsync(string sku);
+    Task<PagedResult<ProductDto>> GetProductsPagedAsync(ProductQueryParams queryParams);
 }

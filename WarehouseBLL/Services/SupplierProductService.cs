@@ -1,4 +1,5 @@
-﻿using WarehouseBLL.DTOs.SupplierProduct;
+﻿using AutoMapper;
+using WarehouseBLL.DTOs.SupplierProduct;
 using WarehouseBLL.Services.Interfaces;
 using WarehouseDAL.UnitOfWork;
 using WarehouseDomain.Entities;
@@ -8,34 +9,36 @@ namespace WarehouseBLL.Services;
 public class SupplierProductService :  ISupplierProductService
 {
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IMapper _mapper;
 
-        public SupplierProductService(IUnitOfWork unitOfWork)
+        public SupplierProductService(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
+            _mapper = mapper;
         }
 
         public async Task<SupplierProductDto?> GetSupplierProductByIdAsync(int id)
         {
             var supplierProduct = await _unitOfWork.SupplierProductRepository.GetByIdAsync(id);
-            return supplierProduct == null ? null : MapToViewDto(supplierProduct);
+            return _mapper.Map<SupplierProductDto>(supplierProduct);
         }
 
         public async Task<IEnumerable<SupplierProductDto>> GetSupplierProductsBySupplierAsync(int supplierId)
         {
             var supplierProducts = await _unitOfWork.SupplierProductRepository.GetBySupplierIdAsync(supplierId);
-            return supplierProducts.Select(MapToViewDto);
+            return _mapper.Map<IEnumerable<SupplierProductDto>>(supplierProducts);
         }
 
         public async Task<IEnumerable<SupplierProductDto>> GetSupplierProductsByProductAsync(int productId)
         {
             var supplierProducts = await _unitOfWork.SupplierProductRepository.GetByProductIdAsync(productId);
-            return supplierProducts.Select(MapToViewDto);
+            return _mapper.Map<IEnumerable<SupplierProductDto>>(supplierProducts);
         }
 
         public async Task<SupplierProductDto?> GetSupplierProductAsync(int supplierId, int productId)
         {
             var supplierProduct = await _unitOfWork.SupplierProductRepository.GetBySupplierAndProductAsync(supplierId, productId);
-            return supplierProduct == null ? null : MapToViewDto(supplierProduct);
+            return _mapper.Map<SupplierProductDto>(supplierProduct);
         }
 
         public async Task<SupplierProductDto> AddProductToSupplierAsync(SupplierProductCreateDto dto)
@@ -46,19 +49,12 @@ public class SupplierProductService :  ISupplierProductService
                     $"Supplier {dto.SupplierId} already supplies Product {dto.ProductId}");
             }
 
-            var supplierProduct = new SupplierProduct
-            {
-                SupplierId = dto.SupplierId,
-                ProductId = dto.ProductId,
-                CreatedAt = DateTime.UtcNow,
-                CreatedBy = dto.CreatedBy,
-                IsDeleted = false
-            };
+            var supplierProduct = _mapper.Map<SupplierProduct>(dto);
 
             await _unitOfWork.SupplierProductRepository.AddAsync(supplierProduct);
             await _unitOfWork.SaveChangesAsync();
 
-            return MapToViewDto(supplierProduct);
+            return _mapper.Map<SupplierProductDto>(supplierProduct);
         }
 
         public async Task RemoveProductFromSupplierAsync(int supplierId, int productId)

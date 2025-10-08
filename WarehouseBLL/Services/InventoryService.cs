@@ -1,6 +1,9 @@
-﻿using WarehouseBLL.DTOs.Inventory;
+﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
+using WarehouseBLL.DTOs.Inventory;
 using WarehouseBLL.DTOs.Product;
 using WarehouseBLL.DTOs.Warehouse;
+using WarehouseBLL.Helpers;
 using WarehouseBLL.Services.Interfaces;
 using WarehouseDAL.UnitOfWork;
 using WarehouseDomain.Entities;
@@ -10,46 +13,48 @@ namespace WarehouseBLL.Services;
 public class InventoryService : IInventoryService
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IMapper  _mapper;
 
-        public InventoryService(IUnitOfWork unitOfWork)
+        public InventoryService(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
+            _mapper = mapper;
         }
 
         public async Task<InventoryDto?> GetInventoryByIdAsync(int id)
         {
             var inventory = await _unitOfWork.InventoryRepository.GetByIdAsync(id);
-            return inventory == null ? null : MapToViewDto(inventory);
+            return _mapper.Map<InventoryDto>(inventory);
         }
 
         public async Task<InventoryWithDetailsDto?> GetInventoryWithDetailsAsync(int id)
         {
             var inventory = await _unitOfWork.InventoryRepository.GetByIdWithDetailsAsync(id);
-            return inventory == null ? null : MapToWithDetailsDto(inventory);
+            return _mapper.Map<InventoryWithDetailsDto>(inventory);
         }
 
         public async Task<InventoryDto?> GetInventoryByWarehouseAndProductAsync(int warehouseId, int productId)
         {
             var inventory = await _unitOfWork.InventoryRepository.GetByWarehouseAndProductAsync(warehouseId, productId);
-            return inventory == null ? null : MapToViewDto(inventory);
+            return _mapper.Map<InventoryDto>(inventory);
         }
 
         public async Task<IEnumerable<InventoryDto>> GetInventoryByWarehouseAsync(int warehouseId)
         {
             var inventories = await _unitOfWork.InventoryRepository.GetByWarehouseIdAsync(warehouseId);
-            return inventories.Select(MapToViewDto);
+            return _mapper.Map<IEnumerable<InventoryDto>>(inventories);
         }
 
         public async Task<IEnumerable<InventoryDto>> GetInventoryByProductAsync(int productId)
         {
             var inventories = await _unitOfWork.InventoryRepository.GetByProductIdAsync(productId);
-            return inventories.Select(MapToViewDto);
+            return _mapper.Map<IEnumerable<InventoryDto>>(inventories);
         }
 
         public async Task<IEnumerable<InventoryWithDetailsDto>> GetLowStockItemsAsync(int threshold)
         {
             var inventories = await _unitOfWork.InventoryRepository.GetLowStockItemsAsync(threshold);
-            return inventories.Select(MapToWithDetailsDto);
+            return _mapper.Map<IEnumerable<InventoryWithDetailsDto>>(inventories);
         }
 
         public async Task<InventoryDto> CreateInventoryAsync(InventoryCreateDto dto)
@@ -61,20 +66,12 @@ public class InventoryService : IInventoryService
                     $"Inventory already exists for Warehouse {dto.WarehouseId} and Product {dto.ProductId}");
             }
 
-            var inventory = new Inventory
-            {
-                WarehouseId = dto.WarehouseId,
-                ProductId = dto.ProductId,
-                Quantity = dto.Quantity,
-                CreatedAt = DateTime.UtcNow,
-                CreatedBy = dto.CreatedBy,
-                IsDeleted = false
-            };
+            var inventory = _mapper.Map<Inventory>(dto);
 
             await _unitOfWork.InventoryRepository.AddAsync(inventory);
             await _unitOfWork.SaveChangesAsync();
 
-            return MapToViewDto(inventory);
+            return _mapper.Map<InventoryDto>(inventory);
         }
 
         public async Task<InventoryDto> UpdateInventoryAsync(InventoryUpdateDto dto)
@@ -83,14 +80,12 @@ public class InventoryService : IInventoryService
             if (inventory == null)
                 throw new InvalidOperationException($"Inventory with ID {dto.Id} not found.");
 
-            inventory.Quantity = dto.Quantity;
-            inventory.UpdatedAt = DateTime.UtcNow;
-            inventory.UpdatedBy = dto.UpdatedBy;
+            _mapper.Map(dto, inventory);
 
             _unitOfWork.InventoryRepository.Update(inventory);
             await _unitOfWork.SaveChangesAsync();
 
-            return MapToViewDto(inventory);
+            return _mapper.Map<InventoryDto>(inventory);
         }
 
         public async Task<InventoryDto> AdjustInventoryQuantityAsync(InventoryAdjustDto dto)
@@ -110,7 +105,7 @@ public class InventoryService : IInventoryService
             _unitOfWork.InventoryRepository.Update(inventory);
             await _unitOfWork.SaveChangesAsync();
 
-            return MapToViewDto(inventory);
+            return _mapper.Map<InventoryDto>(inventory);
         }
 
         public async Task DeleteInventoryAsync(int id)
@@ -177,4 +172,62 @@ public class InventoryService : IInventoryService
                 IsDeleted = inventory.Product.IsDeleted
             }
         };
+        
+        public async Task<PagedResult<InventoryWithDetailsDto>> GetInventoryPagedAsync(InventoryQueryParams queryParams)
+        {
+            var query = _unitOfWork.InventoryRepository.GetAllAsync().Result.AsQueryable();
+
+            // Filtering
+            if (queryParams.WarehouseId.HasValue)
+            {
+                query = query.Where(i => i.WarehouseId == queryParams.WarehouseId.Value);
+            }
+
+            if (queryParams.ProductId.HasValue)
+            {
+                query = query.Where(i => i.ProductId == queryParams.ProductId.Value);
+            }
+
+            if (queryParams.MinQuantity.HasValue)
+            {
+                query = query.Where(i => i.Quantity >= queryParams.MinQuantity.Value);
+            }
+
+            if (queryParams.MaxQuantity.HasValue)
+            {
+                query = query.Where(i => i.Quantity <= queryParams.MaxQuantity.Value);
+            }
+
+            if (queryParams.LowStock.HasValue && queryParams.LowStock.Value)
+            {
+                var threshold = queryParams.LowStockThreshold ?? 10;
+                query = query.Where(i => i.Quantity <= threshold);
+            }
+
+            // Include related entities
+            var inventories = await query.ToListAsync();
+            var inventoriesWithDetails = new List<Inventory>();
+            
+            foreach (var inv in inventories)
+            {
+                var full = await _unitOfWork.InventoryRepository.GetByIdWithDetailsAsync(inv.Id);
+                if (full != null)
+                    inventoriesWithDetails.Add(full);
+            }
+
+            var queryWithDetails = inventoriesWithDetails.AsQueryable();
+
+            // Sorting
+            queryWithDetails = queryWithDetails.ApplySorting(queryParams.SortBy ?? "Id", queryParams.SortDirection);
+
+            // Pagination
+            var totalCount = inventoriesWithDetails.Count;
+            var items = queryWithDetails
+                .Skip((queryParams.Page - 1) * queryParams.PageSize)
+                .Take(queryParams.PageSize)
+                .Select(_mapper.Map<InventoryWithDetailsDto>)
+                .ToList();
+
+            return new PagedResult<InventoryWithDetailsDto>(items, totalCount, queryParams.Page, queryParams.PageSize);
+        }
     }
