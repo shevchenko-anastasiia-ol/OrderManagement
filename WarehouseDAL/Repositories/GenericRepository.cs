@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Linq.Expressions;
+using Microsoft.EntityFrameworkCore;
 using WarehouseDAL.Data;
 using WarehouseDAL.Repositories.Interfaces;
 
@@ -38,5 +39,10 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
     public virtual void Delete(T entity)
     {
         _dbSet.Remove(entity);
+    }
+    
+    public virtual async Task<bool> AnyAsync(Expression<Func<T, bool>> predicate)
+    {
+        return await _dbSet.AnyAsync(predicate);
     }
 }

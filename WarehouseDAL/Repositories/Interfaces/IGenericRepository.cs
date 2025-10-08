@@ -1,4 +1,6 @@
-﻿namespace WarehouseDAL.Repositories.Interfaces;
+﻿using System.Linq.Expressions;
+
+namespace WarehouseDAL.Repositories.Interfaces;
 
 public interface IGenericRepository<T> where T : class
 {
@@ -7,4 +9,5 @@ public interface IGenericRepository<T> where T : class
     Task AddAsync(T entity);
     void Update(T entity);
     void Delete(T entity);
+    Task<bool> AnyAsync(Expression<Func<T, bool>> predicate);
 }
