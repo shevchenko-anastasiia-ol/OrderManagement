@@ -1,5 +1,8 @@
 ﻿using System.Linq.Expressions;
+using Ardalis.Specification;
+using Ardalis.Specification.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using WarehouseBLL.Specifications;
 using WarehouseDAL.Data;
 using WarehouseDAL.Repositories.Interfaces;
 
@@ -45,4 +48,36 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
     {
         return await _dbSet.AnyAsync(predicate);
     }
+    
+    public async Task<List<T>> ListAsync(ISpecification<T> spec)
+    {
+        var specificationResult = ApplyArdalisSpecification(spec);
+        return await specificationResult.ToListAsync();
+    }
+    
+    public async Task<int> CountAsync(ISpecification<T> spec)
+    {
+        var specificationResult = ApplyArdalisSpecification(spec);
+        return await specificationResult.CountAsync();
+    }
+    
+    public async Task<T?> FirstOrDefaultAsync(ISpecification<T> spec)
+    {
+        var specificationResult = ApplyArdalisSpecification(spec);
+        return await specificationResult.FirstOrDefaultAsync();
+    }
+
+    public async Task<T?> SingleOrDefaultAsync(ISingleResultSpecification<T> spec)
+    {
+        var specificationResult = ApplyArdalisSpecification(spec);
+        return await specificationResult.SingleOrDefaultAsync();
+    }
+
+    private IQueryable<T> ApplyArdalisSpecification(ISpecification<T> spec)
+    {
+        var evaluator = new SpecificationEvaluator();
+        return evaluator.GetQuery(_dbSet, spec);
+    }
+    
+    
 }

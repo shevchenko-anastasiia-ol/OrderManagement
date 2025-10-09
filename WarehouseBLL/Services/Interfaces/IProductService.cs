@@ -18,4 +18,7 @@ public interface IProductService
     Task<bool> ProductExistsAsync(int id);
     Task<bool> SkuExistsAsync(string sku);
     Task<PagedResult<ProductDto>> GetProductsPagedAsync(ProductQueryParams queryParams);
+    Task<ProductWithSuppliersDto?> GetProductWithSuppliersAsync(int id);
+    Task<List<ProductDto>> GetLowStockProductsAsync(int threshold = 10);
+    Task<List<ProductDto>> GetRecentProductsAsync(int count = 10);
 }

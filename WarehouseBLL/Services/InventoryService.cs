@@ -3,8 +3,11 @@ using Microsoft.EntityFrameworkCore;
 using WarehouseBLL.DTOs.Inventory;
 using WarehouseBLL.DTOs.Product;
 using WarehouseBLL.DTOs.Warehouse;
+using WarehouseBLL.Exceptions;
 using WarehouseBLL.Helpers;
 using WarehouseBLL.Services.Interfaces;
+using WarehouseBLL.Specifications;
+using WarehouseBLL.Specifications.Inventory;
 using WarehouseDAL.UnitOfWork;
 using WarehouseDomain.Entities;
 
@@ -23,50 +26,89 @@ public class InventoryService : IInventoryService
 
         public async Task<InventoryDto?> GetInventoryByIdAsync(int id)
         {
-            var inventory = await _unitOfWork.InventoryRepository.GetByIdAsync(id);
+            var spec = new InventoryByIdSpecification(id);
+            var inventory = await _unitOfWork.InventoryRepository.SingleOrDefaultAsync(spec);
+        
+            if (inventory == null)
+                throw new NotFoundException($"Inventory with ID {id} not found.");
+
             return _mapper.Map<InventoryDto>(inventory);
         }
 
         public async Task<InventoryWithDetailsDto?> GetInventoryWithDetailsAsync(int id)
         {
-            var inventory = await _unitOfWork.InventoryRepository.GetByIdWithDetailsAsync(id);
+            
+            var spec = new InventoryByIdSpecification(id);
+            var inventory = await _unitOfWork.InventoryRepository.SingleOrDefaultAsync(spec);
+        
+            if (inventory == null)
+                throw new NotFoundException($"Inventory with ID {id} not found.");
+
             return _mapper.Map<InventoryWithDetailsDto>(inventory);
         }
 
         public async Task<InventoryDto?> GetInventoryByWarehouseAndProductAsync(int warehouseId, int productId)
         {
-            var inventory = await _unitOfWork.InventoryRepository.GetByWarehouseAndProductAsync(warehouseId, productId);
+            var spec = new InventoryByWarehouseAndProductSpec(warehouseId, productId);
+            var inventory = await _unitOfWork.InventoryRepository.SingleOrDefaultAsync(spec);
+        
+            if (inventory == null)
+                throw new NotFoundException($"No inventory found for Warehouse {warehouseId} and Product {productId}.");
+
             return _mapper.Map<InventoryDto>(inventory);
         }
 
         public async Task<IEnumerable<InventoryDto>> GetInventoryByWarehouseAsync(int warehouseId)
         {
-            var inventories = await _unitOfWork.InventoryRepository.GetByWarehouseIdAsync(warehouseId);
+            var spec = new InventoryByWarehouseSpec(warehouseId);
+            var inventories = await _unitOfWork.InventoryRepository.ListAsync(spec);
+        
+            if (!inventories.Any())
+                throw new NotFoundException($"No inventory records found for Warehouse ID {warehouseId}.");
+
             return _mapper.Map<IEnumerable<InventoryDto>>(inventories);
         }
 
         public async Task<IEnumerable<InventoryDto>> GetInventoryByProductAsync(int productId)
         {
-            var inventories = await _unitOfWork.InventoryRepository.GetByProductIdAsync(productId);
+            var spec = new InventoryByProductSpec(productId);
+            var inventories = await _unitOfWork.InventoryRepository.ListAsync(spec);
+        
+            if (!inventories.Any())
+                throw new NotFoundException($"No inventory records found for Product ID {productId}.");
+
             return _mapper.Map<IEnumerable<InventoryDto>>(inventories);
         }
 
         public async Task<IEnumerable<InventoryWithDetailsDto>> GetLowStockItemsAsync(int threshold)
         {
-            var inventories = await _unitOfWork.InventoryRepository.GetLowStockItemsAsync(threshold);
+            var queryParams = new InventoryQueryParams 
+            { 
+                LowStock = true, 
+                LowStockThreshold = threshold,
+                Page = 1,
+                PageSize = int.MaxValue
+            };
+            var spec = new InventorySpecification(queryParams);
+            var inventories = await _unitOfWork.InventoryRepository.ListAsync(spec);
+        
             return _mapper.Map<IEnumerable<InventoryWithDetailsDto>>(inventories);
         }
 
         public async Task<InventoryDto> CreateInventoryAsync(InventoryCreateDto dto)
         {
-            var existing = await _unitOfWork.InventoryRepository.GetByWarehouseAndProductAsync(dto.WarehouseId, dto.ProductId);
+            var existingSpec = new InventoryByWarehouseAndProductSpec(dto.WarehouseId, dto.ProductId);
+            var existing = await _unitOfWork.InventoryRepository.FirstOrDefaultAsync(existingSpec);
+        
             if (existing != null)
-            {
-                throw new InvalidOperationException(
-                    $"Inventory already exists for Warehouse {dto.WarehouseId} and Product {dto.ProductId}");
-            }
+                throw new ConflictException($"Inventory already exists for Warehouse {dto.WarehouseId} and Product {dto.ProductId}.");
+
+            if (dto.Quantity < 0)
+                throw new BadRequestException("Inventory quantity cannot be negative.");
 
             var inventory = _mapper.Map<Inventory>(dto);
+            inventory.CreatedAt = DateTime.UtcNow;
+            inventory.UpdatedAt = DateTime.UtcNow;
 
             await _unitOfWork.InventoryRepository.AddAsync(inventory);
             await _unitOfWork.SaveChangesAsync();
@@ -76,11 +118,17 @@ public class InventoryService : IInventoryService
 
         public async Task<InventoryDto> UpdateInventoryAsync(InventoryUpdateDto dto)
         {
-            var inventory = await _unitOfWork.InventoryRepository.GetByIdAsync(dto.Id);
+            var spec = new InventoryByIdSpecification(dto.Id);
+            var inventory = await _unitOfWork.InventoryRepository.SingleOrDefaultAsync(spec);
+        
             if (inventory == null)
-                throw new InvalidOperationException($"Inventory with ID {dto.Id} not found.");
+                throw new NotFoundException($"Inventory with ID {dto.Id} not found.");
+
+            if (dto.Quantity < 0)
+                throw new BadRequestException("Inventory quantity cannot be negative.");
 
             _mapper.Map(dto, inventory);
+            inventory.UpdatedAt = DateTime.UtcNow;
 
             _unitOfWork.InventoryRepository.Update(inventory);
             await _unitOfWork.SaveChangesAsync();
@@ -90,14 +138,16 @@ public class InventoryService : IInventoryService
 
         public async Task<InventoryDto> AdjustInventoryQuantityAsync(InventoryAdjustDto dto)
         {
-            var inventory = await _unitOfWork.InventoryRepository.GetByIdAsync(dto.Id);
+            var spec = new InventoryByIdSpecification(dto.Id);
+            var inventory = await _unitOfWork.InventoryRepository.SingleOrDefaultAsync(spec);
+        
             if (inventory == null)
-                throw new InvalidOperationException($"Inventory with ID {dto.Id} not found.");
+                throw new NotFoundException($"Inventory with ID {dto.Id} not found.");
 
             inventory.Quantity += dto.QuantityChange;
 
             if (inventory.Quantity < 0)
-                throw new InvalidOperationException("Inventory quantity cannot be negative.");
+                throw new BadRequestException("Inventory quantity cannot be negative.");
 
             inventory.UpdatedAt = DateTime.UtcNow;
             inventory.UpdatedBy = dto.UpdatedBy;
@@ -110,25 +160,33 @@ public class InventoryService : IInventoryService
 
         public async Task DeleteInventoryAsync(int id)
         {
-            var inventory = await _unitOfWork.InventoryRepository.GetByIdAsync(id);
-            if (inventory != null)
-            {
-                inventory.IsDeleted = true;
-                inventory.UpdatedAt = DateTime.UtcNow;
+            var spec = new InventoryByIdSpecification(id);
+            var inventory = await _unitOfWork.InventoryRepository.SingleOrDefaultAsync(spec);
+        
+            if (inventory == null)
+                throw new NotFoundException($"Inventory with ID {id} not found.");
 
-                _unitOfWork.InventoryRepository.Update(inventory);
-                await _unitOfWork.SaveChangesAsync();
-            }
+            inventory.IsDeleted = true;
+            inventory.UpdatedAt = DateTime.UtcNow;
+
+            _unitOfWork.InventoryRepository.Update(inventory);
+            await _unitOfWork.SaveChangesAsync();
         }
 
         public async Task<bool> InventoryExistsAsync(int id)
         {
-            return await _unitOfWork.InventoryRepository.AnyAsync(i => i.Id == id && !i.IsDeleted);
+            var spec = new InventoryByIdSpecification(id);
+            return await _unitOfWork.InventoryRepository.AnyAsync(w => w.Id == id && !w.IsDeleted);
         }
-
+        
         public async Task<int> GetTotalStockForProductAsync(int productId)
         {
-            var inventories = await _unitOfWork.InventoryRepository.GetByProductIdAsync(productId);
+            var spec = new InventoryByProductSpec(productId);
+            var inventories = await _unitOfWork.InventoryRepository.ListAsync(spec);
+        
+            if (!inventories.Any())
+                throw new NotFoundException($"No inventory found for Product ID {productId}.");
+
             return inventories.Sum(i => i.Quantity);
         }
 
@@ -175,59 +233,15 @@ public class InventoryService : IInventoryService
         
         public async Task<PagedResult<InventoryWithDetailsDto>> GetInventoryPagedAsync(InventoryQueryParams queryParams)
         {
-            var query = _unitOfWork.InventoryRepository.GetAllAsync().Result.AsQueryable();
+            var spec = new InventorySpecification(queryParams);
+            var countSpec = new InventoryCountSpecification(queryParams);
 
-            // Filtering
-            if (queryParams.WarehouseId.HasValue)
-            {
-                query = query.Where(i => i.WarehouseId == queryParams.WarehouseId.Value);
-            }
+            var inventories = await _unitOfWork.InventoryRepository.ListAsync(spec);
+            var totalCount = await _unitOfWork.InventoryRepository.CountAsync(countSpec);
 
-            if (queryParams.ProductId.HasValue)
-            {
-                query = query.Where(i => i.ProductId == queryParams.ProductId.Value);
-            }
-
-            if (queryParams.MinQuantity.HasValue)
-            {
-                query = query.Where(i => i.Quantity >= queryParams.MinQuantity.Value);
-            }
-
-            if (queryParams.MaxQuantity.HasValue)
-            {
-                query = query.Where(i => i.Quantity <= queryParams.MaxQuantity.Value);
-            }
-
-            if (queryParams.LowStock.HasValue && queryParams.LowStock.Value)
-            {
-                var threshold = queryParams.LowStockThreshold ?? 10;
-                query = query.Where(i => i.Quantity <= threshold);
-            }
-
-            // Include related entities
-            var inventories = await query.ToListAsync();
-            var inventoriesWithDetails = new List<Inventory>();
-            
-            foreach (var inv in inventories)
-            {
-                var full = await _unitOfWork.InventoryRepository.GetByIdWithDetailsAsync(inv.Id);
-                if (full != null)
-                    inventoriesWithDetails.Add(full);
-            }
-
-            var queryWithDetails = inventoriesWithDetails.AsQueryable();
-
-            // Sorting
-            queryWithDetails = queryWithDetails.ApplySorting(queryParams.SortBy ?? "Id", queryParams.SortDirection);
-
-            // Pagination
-            var totalCount = inventoriesWithDetails.Count;
-            var items = queryWithDetails
-                .Skip((queryParams.Page - 1) * queryParams.PageSize)
-                .Take(queryParams.PageSize)
-                .Select(_mapper.Map<InventoryWithDetailsDto>)
-                .ToList();
+            var items = _mapper.Map<IEnumerable<InventoryWithDetailsDto>>(inventories);
 
             return new PagedResult<InventoryWithDetailsDto>(items, totalCount, queryParams.Page, queryParams.PageSize);
         }
+
     }
