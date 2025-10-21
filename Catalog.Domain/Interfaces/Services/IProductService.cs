@@ -9,7 +9,7 @@ public interface IProductService
         Task<Product?> GetByIdAsync(string id, CancellationToken cancellationToken = default);
         Task<IEnumerable<Product>> GetAllAsync(CancellationToken cancellationToken = default);
         Task<Product?> UpdateAsync(Product product, CancellationToken cancellationToken = default);
-        Task<bool> DeleteAsync(string id, CancellationToken cancellationToken = default);
+        Task<bool> DeleteAsync(string id, bool deleteReviews, CancellationToken cancellationToken = default);
 
         Task<IEnumerable<Product>> SearchByTextAsync(string searchTerm, int? limit = null, CancellationToken cancellationToken = default);
         Task<IEnumerable<Product>> GetByCategoryAsync(string categoryId, CancellationToken cancellationToken = default);
@@ -30,7 +30,7 @@ public interface IProductService
         Task<bool> RemoveCategoryFromProductAsync(string productId, string categoryId, CancellationToken cancellationToken = default);
         Task<bool> UpdateProductCategoriesAsync(string productId, IEnumerable<string> categoryIds, CancellationToken cancellationToken = default);
         Task<IEnumerable<string>> GetProductIdsByCategoryAsync(string categoryId, CancellationToken cancellationToken = default);
-        Task<int> UpdatePricesAsync(Dictionary<string, decimal> priceUpdates, CancellationToken cancellationToken = default);
+        Task<int> UpdatePriceAsync(Product priceUpdates, CancellationToken cancellationToken = default);
         Task<int> UpdateSellerAsync(string oldSellerId, string newSellerId, CancellationToken cancellationToken = default);
         Task<int> RemoveCategoryFromAllProductsAsync(string categoryId, CancellationToken cancellationToken = default);
         Task<int> ReplaceCategoryInAllProductsAsync(string oldCategoryId, string newCategoryId, CancellationToken cancellationToken = default);

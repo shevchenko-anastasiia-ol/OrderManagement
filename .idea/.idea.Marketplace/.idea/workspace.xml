@@ -13,35 +13,45 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c3e03ffc-4c5c-4416-a298-a8db756913f1" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/Catalog.API/Catalog.API.csproj" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Catalog.API/Catalog.API.http" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Catalog.API/Program.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Catalog.API/Properties/launchSettings.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Catalog.API/appsettings.Development.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Catalog.API/appsettings.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Catalog.Application/Catalog.Application.csproj" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Catalog.Application/Class1.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Catalog.Domain/Catalog.Domain.csproj" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Catalog.Domain/Common/BaseEntity.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Catalog.Domain/Common/ValueObject.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Catalog.Domain/Entities/BsonCollectionAttribute.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Catalog.Domain/Entities/Category.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Catalog.Domain/Entities/Product.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Catalog.Domain/Entities/ProductDetail.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Catalog.Domain/Entities/Review.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Catalog.Domain/Entities/ReviewReply.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Catalog.Domain/Entities/Seller.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Catalog.Domain/Exceptions/ConflictException.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Catalog.Domain/Exceptions/DomainException.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Catalog.Domain/Exceptions/ValidationException.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Catalog.Domain/ValueObjects/Email.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Catalog.Domain/ValueObjects/Money.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Catalog.Domain/ValueObjects/Phone.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Catalog.Infrastructure/Catalog.Infrastructure.csproj" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Catalog.Infrastructure/Class1.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Commands/Category/CreateCategory/CreateCategoryCommand.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Commands/Category/CreateCategory/CreateCategoryCommandHandler.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Commands/Category/DeleteCategory/DeleteCategoryCommand.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Commands/Category/DeleteCategory/DeleteCategoryCommandHandler.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Commands/Category/UpdateCategory/UpdateCategoryCommand.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Commands/Category/UpdateCategory/UpdateCategoryCommandHandler.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Commands/Product/AddProductImages/AddProductImagesCommand.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Commands/Product/AddProductImages/AddProductImagesCommandHandler.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Commands/Product/CreateProduct/CreateProductCommand.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Commands/Product/CreateProduct/CreateProductCommandHandler.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Commands/Product/DeleteProduct/DeleteProductCommand.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Commands/Product/DeleteProduct/DeleteProductCommandHandler.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Commands/Product/UpdateProduct/UpdateProductCommand.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Commands/Product/UpdateProduct/UpdateProductCommandHandler.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Commands/Product/UpdateProductPrice/UpdateProductPriceCommand.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Commands/Product/UpdateProductPrice/UpdateProductPriceCommandHandler.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Commands/Review/AddReviewReply/AddReviewReplyCommand.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Commands/Review/AddReviewReply/AddReviewReplyCommandHandler.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Commands/Review/CreateReview/CreateReviewCommand.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Commands/Review/CreateReview/CreateReviewCommandHandler.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Commands/Review/DeleteReview/DeleteReviewCommand.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Commands/Review/DeleteReview/DeleteReviewCommandHandler.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Commands/Review/UpdateReview/UpdateReviewCommand.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Commands/Review/UpdateReview/UpdateReviewCommandHandler.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Commands/Seller/CreateSeller/CreateSellerCommand.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Commands/Seller/CreateSeller/CreateSellerCommandHandler.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Commands/Seller/DeleteSeller/DeleteSellerCommand.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Commands/Seller/DeleteSeller/DeleteSellerCommandHandler.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Commands/Seller/UpdateSeller/UpdateSellerCommand.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Commands/Seller/UpdateSeller/UpdateSellerCommandHandler.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Interfaces/Commands/ICommand.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Interfaces/Commands/ICommandHandler.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Interfaces/Queries/IQuery.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Interfaces/Queries/IQueryHandler.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Domain/Interfaces/IUnitOfWork.cs" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/../../olimpiada/olimpiada/k.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Marketplace/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Marketplace/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Marketplace.sln" beforeDir="false" afterPath="$PROJECT_DIR$/Marketplace.sln" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Catalog.Application/Class1.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Catalog.Domain/Interfaces/Services/IProductService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Catalog.Domain/Interfaces/Services/IProductService.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../../StudentPortal.AppHost/obj/Debug/net9.0/StudentPortal.AppHost.AssemblyInfo.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../../StudentPortal.AppHost/obj/Debug/net9.0/StudentPortal.AppHost.AssemblyInfo.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../../StudentPortal.AppHost/obj/Debug/net9.0/StudentPortal.AppHost.AssemblyInfoInputs.cache" beforeDir="false" afterPath="$PROJECT_DIR$/../../StudentPortal.AppHost/obj/Debug/net9.0/StudentPortal.AppHost.AssemblyInfoInputs.cache" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../../StudentPortal.AppHost/obj/rider.project.model.nuget.info" beforeDir="false" afterPath="$PROJECT_DIR$/../../StudentPortal.AppHost/obj/rider.project.model.nuget.info" afterDir="false" />
@@ -97,7 +107,7 @@
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$PROJECT_DIR$/OrderManagementAPI/Program.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/OrderManagementAPI/appsettings.json" root0="FORCE_HIGHLIGHTING" />
-    <setting file="mock://D:/nastya/.Net/Marketplace/WarehouseBLL/Services/Interfaces/IInventoryService.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/../../olimpiada/olimpiada/k.cs" root0="SKIP_HIGHLIGHTING" />
   </component>
   <component name="KubernetesApiPersistence">{}</component>
   <component name="KubernetesApiProvider">{
@@ -249,7 +259,9 @@
       <workItem from="1759959163203" duration="17812000" />
       <workItem from="1760355991559" duration="1792000" />
       <workItem from="1760432521359" duration="1464000" />
-      <workItem from="1760911180661" duration="3385000" />
+      <workItem from="1760911180661" duration="10311000" />
+      <workItem from="1760957200173" duration="1402000" />
+      <workItem from="1760994376928" duration="5670000" />
     </task>
     <task id="LOCAL-00001" summary="Created models, repositories">
       <option name="closed" value="true" />
@@ -323,7 +335,23 @@
       <option name="project" value="LOCAL" />
       <updated>1759977220205</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="Created entities, value of objects, exceptions">
+      <option name="closed" value="true" />
+      <created>1760914720447</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1760914720447</updated>
+    </task>
+    <task id="LOCAL-00011" summary="created intefaces of repositories and services">
+      <option name="closed" value="true" />
+      <created>1760921482038</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1760921482038</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -342,7 +370,9 @@
     <MESSAGE value="Upgraded services due to DTO" />
     <MESSAGE value="Added sorting, pagination, filters; added validation with FluentApi, created exceptions and middleware" />
     <MESSAGE value="Added anotations, created controllers, specifications" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added anotations, created controllers, specifications" />
+    <MESSAGE value="Created entities, value of objects, exceptions" />
+    <MESSAGE value="created intefaces of repositories and services" />
+    <option name="LAST_COMMIT_MESSAGE" value="created intefaces of repositories and services" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
