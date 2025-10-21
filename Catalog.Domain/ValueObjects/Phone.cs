@@ -29,6 +29,14 @@ public sealed class Phone : ValueObject
     {
         yield return Value;
     }
+    
+    public bool IsValid()
+    {
+        // приклад простої перевірки
+        return !string.IsNullOrWhiteSpace(Value)
+               && Value.All(char.IsDigit)
+               && Value.Length >= 10 && Value.Length <= 15;
+    }
 
     public override string ToString() => Value;
     public static implicit operator string(Phone phone) => phone.Value;

@@ -19,8 +19,8 @@ public interface ICategoryService
     Task<long> GetProductCountAsync(string categoryId, CancellationToken cancellationToken = default);
     Task<IEnumerable<Category>> GetByIdsAsync(IEnumerable<string> categoryIds, CancellationToken cancellationToken = default);
     Task<bool> AllExistAsync(IEnumerable<string> categoryIds, CancellationToken cancellationToken = default);
-    Task<PagedList<Category>> GetNonExistingIdsAsync(IEnumerable<string> categoryIds, CancellationToken cancellationToken = default);
+    Task<IEnumerable<string>> GetNonExistingIdsAsync(IEnumerable<string> categoryIds, CancellationToken cancellationToken = default);
     Task<PagedList<Category>> GetEmptyCategoriesAsync(CancellationToken cancellationToken = default);
-    Task<PagedList<Category>> GetAllSortedByNameAsync(bool ascending = true, CancellationToken cancellationToken = default);
+    Task<PagedList<Category>> GetAllSortedByNameAsync(int pageNumber, int pageSize, bool ascending = true, string? orderBy = null, CancellationToken cancellationToken = default);
     Task<PagedList<Category>> GetRecentCategoriesAsync(int count, CancellationToken cancellationToken = default);
 }

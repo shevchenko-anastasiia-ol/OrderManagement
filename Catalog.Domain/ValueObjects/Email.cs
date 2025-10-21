@@ -28,6 +28,18 @@ public sealed class Email : ValueObject
     {
         yield return Value;
     }
+    
+    public bool IsValid()
+    {
+        if (string.IsNullOrWhiteSpace(Value))
+            return false;
+        
+        return System.Text.RegularExpressions.Regex.IsMatch(
+            Value,
+            @"^[^@\s]+@[^@\s]+\.[^@\s]+$",
+            System.Text.RegularExpressions.RegexOptions.IgnoreCase
+        );
+    }
 
     public override string ToString() => Value;
     public static implicit operator string(Email email) => email.Value;
