@@ -1,5 +1,6 @@
 ﻿using Catalog.Domain.Common.Helpers;
 using Catalog.Domain.Entities;
+using Catalog.Domain.Entities.Parameters;
 
 namespace Catalog.Domain.Interfaces.Services;
 
@@ -7,7 +8,7 @@ public interface ICategoryService
 {
     Task<Category> CreateAsync(Category category, CancellationToken cancellationToken = default);
     Task<Category?> GetByIdAsync(string id, CancellationToken cancellationToken = default);
-    Task<IEnumerable<Category>> GetAllAsync(CancellationToken cancellationToken = default);
+    Task<PagedList<Category>> GetAllAsync(CategoryParameters parameters, CancellationToken cancellationToken = default);
     Task<Category?> UpdateAsync(Category category, CancellationToken cancellationToken = default);
     Task<bool> DeleteAsync(string id, CancellationToken cancellationToken = default);
 

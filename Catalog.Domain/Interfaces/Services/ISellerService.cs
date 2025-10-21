@@ -1,5 +1,6 @@
 ﻿using Catalog.Domain.Common.Helpers;
 using Catalog.Domain.Entities;
+using Catalog.Domain.Entities.Parameters;
 
 namespace Catalog.Domain.Interfaces.Services;
 
@@ -7,7 +8,7 @@ public interface ISellerService
     {
         Task<Seller> CreateAsync(Seller seller, CancellationToken cancellationToken = default);
         Task<Seller?> GetByIdAsync(string id, CancellationToken cancellationToken = default);
-        Task<IEnumerable<Seller>> GetAllAsync(CancellationToken cancellationToken = default);
+        Task<PagedList<Seller>> GetAllAsync(SellerParameters sellerParameters , CancellationToken cancellationToken = default);
         Task<Seller?> UpdateAsync(Seller seller, CancellationToken cancellationToken = default);
         Task<bool> DeleteAsync(string id, CancellationToken cancellationToken = default);
 

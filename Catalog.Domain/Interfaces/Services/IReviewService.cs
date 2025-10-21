@@ -1,5 +1,6 @@
 ﻿using Catalog.Domain.Common.Helpers;
 using Catalog.Domain.Entities;
+using Catalog.Domain.Entities.Parameters;
 
 namespace Catalog.Domain.Interfaces.Services;
 
@@ -7,7 +8,7 @@ public interface IReviewService
     {
         Task<Review> CreateAsync(Review review, CancellationToken cancellationToken = default);
         Task<Review?> GetByIdAsync(string id, CancellationToken cancellationToken = default);
-        Task<IEnumerable<Review>> GetAllAsync(CancellationToken cancellationToken = default);
+        Task<PagedList<Review>> GetAllAsync(ReviewParameters parameters, CancellationToken cancellationToken = default);
         Task<Review?> UpdateAsync(Review review, CancellationToken cancellationToken = default);
         Task<bool> DeleteAsync(string id, CancellationToken cancellationToken = default);
 
