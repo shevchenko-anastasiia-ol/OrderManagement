@@ -13,34 +13,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c3e03ffc-4c5c-4416-a298-a8db756913f1" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/Catalog.Application/Behaviors/ExceptionHandlingBehavior.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Catalog.Application/Behaviors/LoggingBehavior.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Catalog.Application/Behaviors/PerformanceBehavior.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Catalog.Application/Behaviors/ValidationBehavior.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Catalog.Application/Validators/Category/CreateCategoryCommandValidator.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Catalog.Application/Validators/Category/DeleteCategoryCommandValidator.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Catalog.Application/Validators/Category/UpdateCategoryCommandValidator.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Catalog.Application/Validators/Product/AddProductImagesCommandValidator.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Catalog.Application/Validators/Product/CreateProductCommandValidator.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Catalog.Application/Validators/Product/DeleteProductCommandValidator.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Catalog.Application/Validators/Product/UpdateProductCommandValidator.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Catalog.Application/Validators/Product/UpdateProductPriceValidator.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Catalog.Application/Validators/Review/AddReviewReplyCommandValidator.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Catalog.Application/Validators/Review/CreateReviewCommandValidator.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Catalog.Application/Validators/Review/DeleteReviewCommandValidator.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Catalog.Application/Validators/Review/UpdateReviewCommandValidator.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Catalog.Application/Validators/Seller/CreateSellerCommandValidator.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Catalog.Application/Validators/Seller/DeleteSellerCommandValidator.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Catalog.Application/Validators/Seller/UpdateSellerCommandValidator.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Catalog.Domain/Exceptions/ConcurrencyException.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Infrastructure/Repositories/CategoryRepository.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Infrastructure/Repositories/GenericRepository.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Infrastructure/Repositories/ProductRepository.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Infrastructure/Repositories/ReviewRepository.cs" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/../../olimpiada/olimpiada/k.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Marketplace/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Marketplace/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Catalog.Application/Catalog.Application.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/Catalog.Application/Catalog.Application.csproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Catalog.Application/Commands/Category/CreateCategory/CreateCategoryCommand.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Catalog.Application/Commands/Category/CreateCategory/CreateCategoryCommand.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Catalog.Application/Commands/Product/DeleteProduct/DeleteProductCommand.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Catalog.Application/Commands/Product/DeleteProduct/DeleteProductCommand.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Catalog.Domain/Interfaces/Services/ICategoryService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Catalog.Domain/Interfaces/Services/ICategoryService.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Catalog.Domain/ValueObjects/Email.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Catalog.Domain/ValueObjects/Email.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Catalog.Domain/ValueObjects/Phone.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Catalog.Domain/ValueObjects/Phone.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Catalog.Domain/Common/Helpers/PagedList.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Catalog.Domain/Common/Helpers/PagedList.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Catalog.Infrastructure/Class1.cs" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../../StudentPortal.AppHost/obj/Debug/net9.0/StudentPortal.AppHost.AssemblyInfo.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../../StudentPortal.AppHost/obj/Debug/net9.0/StudentPortal.AppHost.AssemblyInfo.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../../StudentPortal.AppHost/obj/Debug/net9.0/StudentPortal.AppHost.AssemblyInfoInputs.cache" beforeDir="false" afterPath="$PROJECT_DIR$/../../StudentPortal.AppHost/obj/Debug/net9.0/StudentPortal.AppHost.AssemblyInfoInputs.cache" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../../StudentPortal.AppHost/obj/rider.project.model.nuget.info" beforeDir="false" afterPath="$PROJECT_DIR$/../../StudentPortal.AppHost/obj/rider.project.model.nuget.info" afterDir="false" />
@@ -250,7 +230,7 @@
       <workItem from="1760432521359" duration="1464000" />
       <workItem from="1760911180661" duration="10311000" />
       <workItem from="1760957200173" duration="1402000" />
-      <workItem from="1760994376928" duration="14788000" />
+      <workItem from="1760994376928" duration="16844000" />
     </task>
     <task id="LOCAL-00001" summary="Created models, repositories">
       <option name="closed" value="true" />
@@ -356,7 +336,15 @@
       <option name="project" value="LOCAL" />
       <updated>1761012611049</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="created validators for commands and behaviors">
+      <option name="closed" value="true" />
+      <created>1761019611463</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1761019611463</updated>
+    </task>
+    <option name="localTasksCounter" value="15" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -379,7 +367,8 @@
     <MESSAGE value="created intefaces of repositories and services" />
     <MESSAGE value="created commands and necessary interfaces" />
     <MESSAGE value="Created queries, updated interfaces of services" />
-    <option name="LAST_COMMIT_MESSAGE" value="Created queries, updated interfaces of services" />
+    <MESSAGE value="created validators for commands and behaviors" />
+    <option name="LAST_COMMIT_MESSAGE" value="created validators for commands and behaviors" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
