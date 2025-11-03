@@ -14,7 +14,7 @@ public class ReviewRepository : GenericRepository<Review>, IReviewRepository
     public ReviewRepository(IMongoDatabase database, string? collectionName = null) 
         : base(database, collectionName ?? "review")
     {
-        _collection = database.GetCollection<Review>(collectionName ?? "review");
+        _collection = database.GetCollection<Review>(collectionName ?? "Reviews");
     }
 
     public async Task<IEnumerable<Review>> GetByProductAsync(string productId, CancellationToken cancellationToken = default)

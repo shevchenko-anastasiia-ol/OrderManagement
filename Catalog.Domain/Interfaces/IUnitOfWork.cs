@@ -1,18 +1,12 @@
 ﻿using Catalog.Domain.Interfaces.Repositories;
+using MongoDB.Driver;
 
 namespace Catalog.Domain.Interfaces;
 
 public interface IUnitOfWork : IDisposable
 {
-    IProductRepository Products { get; }
-    ICategoryRepository Categories { get; }
-    ISellerRepository Sellers { get; }
-    IReviewRepository Reviews { get; }
-    
-    Task BeginTransactionAsync(CancellationToken cancellationToken = default);
-    Task CommitTransactionAsync(CancellationToken cancellationToken = default);
-    Task AbortTransactionAsync(CancellationToken cancellationToken = default);
-    Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
-    
-    bool IsInTransaction { get; }
+    IClientSessionHandle Session { get; }
+    Task StartTransactionAsync();
+    Task CommitAsync(CancellationToken cancellationToken = default);
+    Task AbortAsync(CancellationToken cancellationToken = default);
 }

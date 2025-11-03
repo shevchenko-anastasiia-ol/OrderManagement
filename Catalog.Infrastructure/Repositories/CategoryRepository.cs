@@ -13,8 +13,8 @@ public class CategoryRepository : GenericRepository<Category>, ICategoryReposito
 
         public CategoryRepository(IMongoDatabase database) : base(database)
         {
-            _collection = database.GetCollection<Category>("categories");
-            _productCollection = database.GetCollection<Product>("products"); // для підрахунку продуктів
+            _collection = database.GetCollection<Category>("Categories");
+            _productCollection = database.GetCollection<Product>("Products"); // для підрахунку продуктів
         }
 
         public async Task<IEnumerable<Category>> SearchByNameAsync(string name, CancellationToken cancellationToken = default)

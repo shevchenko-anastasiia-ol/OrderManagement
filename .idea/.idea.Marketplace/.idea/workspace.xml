@@ -13,14 +13,123 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c3e03ffc-4c5c-4416-a298-a8db756913f1" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/Catalog.Infrastructure/Repositories/CategoryRepository.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Catalog.Infrastructure/Repositories/GenericRepository.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Catalog.Infrastructure/Repositories/ProductRepository.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Catalog.Infrastructure/Repositories/ReviewRepository.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.API/Controllers/BaseApiController.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.API/Controllers/CategoryController.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.API/Controllers/ProductController.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.API/Controllers/ReviewController.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.API/Controllers/SellerController.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.API/Middleware/GlobalExceptionMiddleware.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Behaviors/CachingBehavior.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Commands/Product/AddCategoryToProduct/AddCategoryToProductCommand.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Commands/Product/AddCategoryToProduct/AddCategoryToProductCommandHandler.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Commands/Product/RemoveCategoryFromProduct/RemoveCategoryFromProductCommand.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Commands/Product/RemoveCategoryFromProduct/RemoveCategoryFromProductCommandHandler.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Commands/Review/DeleteAllProductReviews/DeleteAllProductReviewsCommand.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Commands/Review/DeleteAllProductReviews/DeleteAllProductReviewsCommandHandler.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Commands/Seller/UpdateSellerEmail/UpdateSellerEmailCommand.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Commands/Seller/UpdateSellerEmail/UpdateSellerEmailCommandHandler.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Commands/Seller/UpdateSellerPhone/UpdateSellerPhoneCommand.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Commands/Seller/UpdateSellerPhone/UpdateSellerPhoneCommandHandler.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Queries/Category/GetCategoryByName/GetCategoryByNameQuery.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Queries/Category/GetCategoryByName/GetCategoryByNameQueryHandler.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Queries/Category/GetCategoryProductCount/GetCategoryProductCountQuery.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Queries/Category/GetCategoryProductCount/GetCategoryProductCountQueryHandler.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Queries/Category/GetEmptyCategories/GetEmptyCategoriesQuery.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Queries/Category/GetEmptyCategories/GetEmptyCategoriesQueryHandler.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Queries/Category/GetRecentCategories/GetRecentCategoriesQuery.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Queries/Category/GetRecentCategories/GetRecentCategoriesQueryHandler.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Queries/Category/IsCategoryInUse/IsCategoryInUseQuery.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Queries/Category/IsCategoryInUse/IsCategoryInUseQueryHandler.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Queries/Category/SearchCategoriesByName/SearchCategoriesByNameHandler.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Queries/Category/SearchCategoriesByName/SearchCategoriesByNameQuery.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Queries/Product/GetLatestProducts/GetLatestProductsQuery.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Queries/Product/GetLatestProducts/GetLatestProductsQueryHandler.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Queries/Product/GetProductCountByCategory/GetProductCountByCategoryQuery.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Queries/Product/GetProductCountByCategory/GetProductCountByCategoryQueryHandler.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Queries/Product/GetProductCountBySeller/GetProductCountBySellerQuery.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Queries/Product/GetProductCountBySeller/GetProductCountBySellerQueryHandler.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Queries/Product/GetProductPriceStatistics/GetProductPriceStatisticsQuery.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Queries/Product/GetProductPriceStatistics/GetProductPriceStatisticsQueryHandler.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Queries/Product/GetProductPriceStatistics/PriceStatistics.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Queries/Product/GetProductsByCategory/GetProductsByCategoryQuery.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Queries/Product/GetProductsByCategory/GetProductsByCategoryQueryHandler.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Queries/Product/GetProductsByPriceRange/GetProductsByPriceRangeQuery.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Queries/Product/GetProductsByPriceRange/GetProductsByPriceRangeQueryHandler.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Queries/Product/GetProductsBySeller/GetProductsBySellerQuery.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Queries/Product/GetProductsBySeller/GetProductsBySellerQueryHandler.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Queries/Product/GetProductsSortedByName/GetProductsSortedByNameQueryHandler.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Queries/Product/GetProductsSortedByName/GeyProductsSortedByNameQuery.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Queries/Product/GetProductsSortedByPrice/GetProductsSortedByPriceQuery.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Queries/Product/GetProductsSortedByPrice/GetProductsSortedByPriceQueryHandler.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Queries/Product/SearchProductsByText/SearchProductsByTextQuery.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Queries/Product/SearchProductsByText/SearchProductsByTextQueryHandler.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Queries/Review/GetHighRatedReviews/GetHighRatedReviewsQuery.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Queries/Review/GetHighRatedReviews/GetHighRatedReviewsQueryHandler.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Queries/Review/GetLowRatedReviews/GetLowRatedReviewsQuery.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Queries/Review/GetLowRatedReviews/GetLowRatedReviewsQueryHandler.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Queries/Review/GetMostRecentReviews/GetMostRecentReviewsQuery.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Queries/Review/GetMostRecentReviews/GetMostRecentReviewsQueryHandler.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Queries/Review/GetProductAverageRating/GetProductAverageRatingQuery.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Queries/Review/GetProductAverageRating/GetProductAverageRatingQueryHandler.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Queries/Review/GetRatingDistribution/GetRatingDistributionQuery.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Queries/Review/GetRatingDistribution/GetRatingDistributionQueryHandler.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Queries/Review/GetReviewsByAuthor/GetReviewsByAuthorQuery.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Queries/Review/GetReviewsByAuthor/GetReviewsByAuthorQueryHandler.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Queries/Review/GetReviewsByProduct/GetReviewsByProductQuery.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Queries/Review/GetReviewsByProduct/GetReviewsByProductQueryHandler.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Queries/Review/GetReviewsByRating/GetReviewsByRatingQuery.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Queries/Review/GetReviewsByRating/GetReviewsByRatingQueryHandler.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Queries/Review/GetReviewsWithReplies/GetReviewsWithRepliesQuery.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Queries/Review/GetReviewsWithReplies/GetReviewsWithRepliesQueryHandler.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Queries/Review/SearchReviewsInComments/SearchReviewsInCommentsQuery.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Queries/Review/SearchReviewsInComments/SearchReviewsInCommentsQueryHandler.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Queries/Seller/GetRecentSellers/GetRecentSellersQuery.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Queries/Seller/GetRecentSellers/GetRecentSellersQueryHandler.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Queries/Seller/GetSellerByEmail/GetSellerByEmailQuery.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Queries/Seller/GetSellerByEmail/GetSellerByEmailQueryHandler.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Queries/Seller/GetSellerByPhone/GetSellerByPhoneQuery.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Queries/Seller/GetSellerByPhone/GetSellerByPhoneQueryHandler.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Queries/Seller/GetSellerProductCount/GetSellerProductCountQuery.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Queries/Seller/GetSellerProductCount/GetSellerProductCountQueryHandler.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Queries/Seller/SearchSellersByName/SearchSellersByNameQuery.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Queries/Seller/SearchSellersByName/SearchSellersByNameQueryHandler.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Queries/Seller/SellerHasProducts/SellerHasProductsQuery.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Queries/Seller/SellerHasProducts/SellerHasProductsQueryHandler.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Services/CategoryService.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Services/ProductService.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Services/ReviewService.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Application/Services/SellerService.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Domain/Exceptions/CustomValidationException.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Domain/Exceptions/MongoDbConnectionException.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Domain/Exceptions/MongoDbWriteException.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Domain/Exceptions/NotFoundException.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Infrastructure/Data/MongoDbContext.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Infrastructure/Data/MongoDbSetting.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Infrastructure/Indexes/IIndexCreation.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Infrastructure/Indexes/MongoIndexCreation.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Infrastructure/Mapping/MongoMapping.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Infrastructure/MongoUnitOfWork.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Infrastructure/Repositories/SellerRepository.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Infrastructure/Seeding/DatabaseSeeder.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Infrastructure/Seeding/IDataSeeder.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Infrastructure/Serializers/EmailSerializer.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Infrastructure/Serializers/MoneySerializer.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Catalog.Infrastructure/Serializers/PhoneSerializer.cs" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/../../olimpiada/olimpiada/k.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Marketplace/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Marketplace/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Catalog.Domain/Common/Helpers/PagedList.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Catalog.Domain/Common/Helpers/PagedList.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Catalog.Infrastructure/Class1.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Catalog.API/Catalog.API.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/Catalog.API/Catalog.API.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Catalog.API/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Catalog.API/Program.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Catalog.API/Properties/launchSettings.json" beforeDir="false" afterPath="$PROJECT_DIR$/Catalog.API/Properties/launchSettings.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Catalog.API/appsettings.json" beforeDir="false" afterPath="$PROJECT_DIR$/Catalog.API/appsettings.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Catalog.Application/Catalog.Application.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/Catalog.Application/Catalog.Application.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Catalog.Domain/Catalog.Domain.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/Catalog.Domain/Catalog.Domain.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Catalog.Domain/Exceptions/ConflictException.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Catalog.Domain/Exceptions/ConflictException.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Catalog.Domain/Exceptions/DomainException.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Catalog.Domain/Exceptions/DomainException.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Catalog.Domain/Exceptions/ValidationException.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Catalog.Domain/Interfaces/IUnitOfWork.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Catalog.Domain/Interfaces/IUnitOfWork.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Catalog.Infrastructure/Repositories/CategoryRepository.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Catalog.Infrastructure/Repositories/CategoryRepository.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Catalog.Infrastructure/Repositories/ProductRepository.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Catalog.Infrastructure/Repositories/ProductRepository.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Catalog.Infrastructure/Repositories/ReviewRepository.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Catalog.Infrastructure/Repositories/ReviewRepository.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../../StudentPortal.AppHost/obj/Debug/net9.0/StudentPortal.AppHost.AssemblyInfo.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../../StudentPortal.AppHost/obj/Debug/net9.0/StudentPortal.AppHost.AssemblyInfo.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../../StudentPortal.AppHost/obj/Debug/net9.0/StudentPortal.AppHost.AssemblyInfoInputs.cache" beforeDir="false" afterPath="$PROJECT_DIR$/../../StudentPortal.AppHost/obj/Debug/net9.0/StudentPortal.AppHost.AssemblyInfoInputs.cache" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../../StudentPortal.AppHost/obj/rider.project.model.nuget.info" beforeDir="false" afterPath="$PROJECT_DIR$/../../StudentPortal.AppHost/obj/rider.project.model.nuget.info" afterDir="false" />
@@ -91,24 +200,25 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;.NET Launch Settings Profile.WarehouseAPI: http.executor&quot;: &quot;Run&quot;,
-    &quot;.NET Launch Settings Profile.WarehouseAPI: https.executor&quot;: &quot;Run&quot;,
-    &quot;.NET Launch Settings Profile.WebApplication1: http.executor&quot;: &quot;Run&quot;,
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    ".NET Launch Settings Profile.Catalog.API: http.executor": "Run",
+    ".NET Launch Settings Profile.WarehouseAPI: http.executor": "Run",
+    ".NET Launch Settings Profile.WarehouseAPI: https.executor": "Run",
+    ".NET Launch Settings Profile.WebApplication1: http.executor": "Run",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "master",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
-  <component name="RunManager" selected=".NET Launch Settings Profile.WarehouseAPI: https">
+}]]></component>
+  <component name="RunManager" selected=".NET Launch Settings Profile.Catalog.API: http">
     <configuration name="Catalog.API: http" type="LaunchSettings" factoryName=".NET Launch Settings Profile">
       <option name="LAUNCH_PROFILE_PROJECT_FILE_PATH" value="$PROJECT_DIR$/Catalog.API/Catalog.API.csproj" />
       <option name="LAUNCH_PROFILE_TFM" value="net9.0" />
@@ -230,7 +340,11 @@
       <workItem from="1760432521359" duration="1464000" />
       <workItem from="1760911180661" duration="10311000" />
       <workItem from="1760957200173" duration="1402000" />
-      <workItem from="1760994376928" duration="16844000" />
+      <workItem from="1760994376928" duration="17097000" />
+      <workItem from="1761030184035" duration="2083000" />
+      <workItem from="1761254409968" duration="17000" />
+      <workItem from="1761689527466" duration="1266000" />
+      <workItem from="1762122378317" duration="13993000" />
     </task>
     <task id="LOCAL-00001" summary="Created models, repositories">
       <option name="closed" value="true" />
@@ -344,7 +458,15 @@
       <option name="project" value="LOCAL" />
       <updated>1761019611463</updated>
     </task>
-    <option name="localTasksCounter" value="15" />
+    <task id="LOCAL-00015" summary="created repositories">
+      <option name="closed" value="true" />
+      <created>1761021664706</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1761021664706</updated>
+    </task>
+    <option name="localTasksCounter" value="16" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -368,7 +490,8 @@
     <MESSAGE value="created commands and necessary interfaces" />
     <MESSAGE value="Created queries, updated interfaces of services" />
     <MESSAGE value="created validators for commands and behaviors" />
-    <option name="LAST_COMMIT_MESSAGE" value="created validators for commands and behaviors" />
+    <MESSAGE value="created repositories" />
+    <option name="LAST_COMMIT_MESSAGE" value="created repositories" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

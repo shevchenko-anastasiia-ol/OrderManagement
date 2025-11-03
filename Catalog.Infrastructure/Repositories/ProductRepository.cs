@@ -12,7 +12,7 @@ public class ProductRepository : GenericRepository<Product>, IProductRepository
 
         public ProductRepository(IMongoDatabase database) : base(database)
         {
-            _collection = database.GetCollection<Product>("products");
+            _collection = database.GetCollection<Product>("Products");
         }
 
         public async Task<IEnumerable<Product>> SearchByTextAsync(string searchTerm, int? limit = null, CancellationToken cancellationToken = default)
