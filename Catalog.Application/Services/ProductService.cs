@@ -3,6 +3,8 @@ using Catalog.Domain.Entities;
 using Catalog.Domain.Entities.Parameters;
 using Catalog.Domain.Interfaces.Repositories;
 using Catalog.Domain.Interfaces.Services;
+using Catalog.Domain.Exceptions;
+using FluentValidation.Results;
 
 namespace Catalog.Application.Services;
 
@@ -30,18 +32,16 @@ public class ProductService : IProductService
         if (product == null)
             throw new ArgumentNullException(nameof(product));
 
-        // Валідація продавця
         if (!await _sellerRepository.ExistsAsync(product.SellerId, cancellationToken))
-            throw new InvalidOperationException($"Seller with ID '{product.SellerId}' does not exist");
+            throw new NotFoundException($"Seller with ID '{product.SellerId}' does not exist");
 
-        // Валідація категорій
         if (product.Categories != null && product.Categories.Any())
         {
             var categoriesExist = await _categoryRepository.AllExistAsync(product.Categories, cancellationToken);
             if (!categoriesExist)
             {
                 var nonExistingIds = await _categoryRepository.GetNonExistingIdsAsync(product.Categories, cancellationToken);
-                throw new InvalidOperationException($"Categories do not exist: {string.Join(", ", nonExistingIds)}");
+                throw new NotFoundException($"Categories do not exist: {string.Join(", ", nonExistingIds)}");
             }
         }
 
@@ -79,20 +79,18 @@ public class ProductService : IProductService
 
         var existing = await _productRepository.GetByIdAsync(product.Id, cancellationToken);
         if (existing == null)
-            throw new InvalidOperationException($"Product with ID '{product.Id}' not found");
+            throw new NotFoundException($"Product with ID '{product.Id}' not found");
 
-        // Валідація продавця
         if (!await _sellerRepository.ExistsAsync(product.SellerId, cancellationToken))
-            throw new InvalidOperationException($"Seller with ID '{product.SellerId}' does not exist");
+            throw new NotFoundException($"Seller with ID '{product.SellerId}' does not exist");
 
-        // Валідація категорій
         if (product.Categories != null && product.Categories.Any())
         {
             var categoriesExist = await _categoryRepository.AllExistAsync(product.Categories, cancellationToken);
             if (!categoriesExist)
             {
                 var nonExistingIds = await _categoryRepository.GetNonExistingIdsAsync(product.Categories, cancellationToken);
-                throw new InvalidOperationException($"Categories do not exist: {string.Join(", ", nonExistingIds)}");
+                throw new NotFoundException($"Categories do not exist: {string.Join(", ", nonExistingIds)}");
             }
         }
 
@@ -102,23 +100,21 @@ public class ProductService : IProductService
     public async Task<bool> DeleteAsync(string id, bool deleteReviews, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(id))
-            throw new ArgumentException("Product ID cannot be empty", nameof(id));
+            throw new CustomValidationException(new[] { new ValidationFailure(nameof(id), "Product ID cannot be empty") });
 
         var product = await _productRepository.GetByIdAsync(id, cancellationToken);
         if (product == null)
             return false;
 
-        // Видалення відгуків якщо потрібно
         if (deleteReviews)
         {
             await _reviewRepository.DeleteAllProductReviewsAsync(id, cancellationToken);
         }
         else
         {
-            // Перевірка чи є відгуки
             var reviewCount = await _reviewRepository.GetProductReviewCountAsync(id, cancellationToken);
             if (reviewCount > 0)
-                throw new InvalidOperationException($"Cannot delete product. It has {reviewCount} reviews. Set deleteReviews to true to delete reviews as well.");
+                throw new ConflictException($"Cannot delete product. It has {reviewCount} reviews. Set deleteReviews to true to delete reviews as well.");
         }
 
         return await _productRepository.DeleteAsync(id, cancellationToken);
@@ -143,7 +139,7 @@ public class ProductService : IProductService
     public async Task<PagedList<Product>> GetByCategoryCursorAsync(string categoryId, string? cursor, int pageSize, string? orderBy = null, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(categoryId))
-            throw new ArgumentException("Category ID cannot be empty", nameof(categoryId));
+            throw new CustomValidationException(new[] { new ValidationFailure(nameof(categoryId), "Category ID cannot be empty") });
 
         if (pageSize < 1)
             throw new ArgumentException("Page size must be greater than 0", nameof(pageSize));
@@ -162,7 +158,7 @@ public class ProductService : IProductService
     public async Task<(PagedList<Product> Items, long TotalCount)> GetPagedByCategoryAsync(string categoryId, int pageNumber, int pageSize, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(categoryId))
-            throw new ArgumentException("Category ID cannot be empty", nameof(categoryId));
+            throw new CustomValidationException(new[] { new ValidationFailure(nameof(categoryId), "Category ID cannot be empty") });
 
         if (pageNumber < 1)
             throw new ArgumentException("Page number must be greater than 0", nameof(pageNumber));
@@ -184,7 +180,7 @@ public class ProductService : IProductService
     public async Task<(PagedList<Product> Items, long TotalCount)> GetPagedBySellerAsync(string sellerId, int pageNumber, int pageSize, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(sellerId))
-            throw new ArgumentException("Seller ID cannot be empty", nameof(sellerId));
+            throw new CustomValidationException(new[] { new ValidationFailure(nameof(sellerId), "Seller ID cannot be empty") });
 
         if (pageNumber < 1)
             throw new ArgumentException("Page number must be greater than 0", nameof(pageNumber));
@@ -253,13 +249,13 @@ public class ProductService : IProductService
     public async Task<bool> AddCategoryToProductAsync(string productId, string categoryId, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(productId))
-            throw new ArgumentException("Product ID cannot be empty", nameof(productId));
+            throw new CustomValidationException(new[] { new ValidationFailure(nameof(productId), "Product ID cannot be empty") });
 
         if (string.IsNullOrWhiteSpace(categoryId))
-            throw new ArgumentException("Category ID cannot be empty", nameof(categoryId));
+            throw new CustomValidationException(new[] { new ValidationFailure(nameof(categoryId), "Category ID cannot be empty") });
 
         if (!await _categoryRepository.ExistsAsync(categoryId, cancellationToken))
-            throw new InvalidOperationException($"Category with ID '{categoryId}' does not exist");
+            throw new NotFoundException($"Category with ID '{categoryId}' does not exist");
 
         return await _productRepository.AddCategoryToProductAsync(productId, categoryId, cancellationToken);
     }
@@ -267,10 +263,10 @@ public class ProductService : IProductService
     public async Task<bool> RemoveCategoryFromProductAsync(string productId, string categoryId, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(productId))
-            throw new ArgumentException("Product ID cannot be empty", nameof(productId));
+            throw new CustomValidationException(new[] { new ValidationFailure(nameof(productId), "Product ID cannot be empty") });
 
         if (string.IsNullOrWhiteSpace(categoryId))
-            throw new ArgumentException("Category ID cannot be empty", nameof(categoryId));
+            throw new CustomValidationException(new[] { new ValidationFailure(nameof(categoryId), "Category ID cannot be empty") });
 
         return await _productRepository.RemoveCategoryFromProductAsync(productId, categoryId, cancellationToken);
     }
@@ -278,7 +274,7 @@ public class ProductService : IProductService
     public async Task<bool> UpdateProductCategoriesAsync(string productId, IEnumerable<string> categoryIds, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(productId))
-            throw new ArgumentException("Product ID cannot be empty", nameof(productId));
+            throw new CustomValidationException(new[] { new ValidationFailure(nameof(productId), "Product ID cannot be empty") });
 
         if (categoryIds == null)
             throw new ArgumentNullException(nameof(categoryIds));
@@ -290,7 +286,7 @@ public class ProductService : IProductService
             if (!allExist)
             {
                 var nonExistingIds = await _categoryRepository.GetNonExistingIdsAsync(categoryIdsList, cancellationToken);
-                throw new InvalidOperationException($"Categories do not exist: {string.Join(", ", nonExistingIds)}");
+                throw new NotFoundException($"Categories do not exist: {string.Join(", ", nonExistingIds)}");
             }
         }
 
@@ -312,9 +308,8 @@ public class ProductService : IProductService
 
         var existingProduct = await _productRepository.GetByIdAsync(product.Id, cancellationToken);
         if (existingProduct == null)
-            throw new InvalidOperationException($"Product with ID '{product.Id}' not found");
+            throw new NotFoundException($"Product with ID '{product.Id}' not found");
 
-        // Використовуємо метод репозиторія для оновлення ціни
         var priceUpdates = new Dictionary<string, decimal> { { product.Id, product.Price.Amount } };
         return await _productRepository.UpdatePricesAsync(priceUpdates, cancellationToken);
     }
@@ -322,13 +317,13 @@ public class ProductService : IProductService
     public async Task<int> UpdateSellerAsync(string oldSellerId, string newSellerId, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(oldSellerId))
-            throw new ArgumentException("Old seller ID cannot be empty", nameof(oldSellerId));
+            throw new CustomValidationException(new[] { new ValidationFailure(nameof(oldSellerId), "Old seller ID cannot be empty") });
 
         if (string.IsNullOrWhiteSpace(newSellerId))
-            throw new ArgumentException("New seller ID cannot be empty", nameof(newSellerId));
+            throw new CustomValidationException(new[] { new ValidationFailure(nameof(newSellerId), "New seller ID cannot be empty") });
 
         if (!await _sellerRepository.ExistsAsync(newSellerId, cancellationToken))
-            throw new InvalidOperationException($"New seller with ID '{newSellerId}' does not exist");
+            throw new NotFoundException($"New seller with ID '{newSellerId}' does not exist");
 
         return await _productRepository.UpdateSellerAsync(oldSellerId, newSellerId, cancellationToken);
     }
@@ -336,7 +331,7 @@ public class ProductService : IProductService
     public async Task<int> RemoveCategoryFromAllProductsAsync(string categoryId, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(categoryId))
-            throw new ArgumentException("Category ID cannot be empty", nameof(categoryId));
+            throw new CustomValidationException(new[] { new ValidationFailure(nameof(categoryId), "Category ID cannot be empty") });
 
         return await _productRepository.RemoveCategoryFromAllProductsAsync(categoryId, cancellationToken);
     }
@@ -344,13 +339,13 @@ public class ProductService : IProductService
     public async Task<int> ReplaceCategoryInAllProductsAsync(string oldCategoryId, string newCategoryId, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(oldCategoryId))
-            throw new ArgumentException("Old category ID cannot be empty", nameof(oldCategoryId));
+            throw new CustomValidationException(new[] { new ValidationFailure(nameof(oldCategoryId), "Old category ID cannot be empty") });
 
         if (string.IsNullOrWhiteSpace(newCategoryId))
-            throw new ArgumentException("New category ID cannot be empty", nameof(newCategoryId));
+            throw new CustomValidationException(new[] { new ValidationFailure(nameof(newCategoryId), "New category ID cannot be empty") });
 
         if (!await _categoryRepository.ExistsAsync(newCategoryId, cancellationToken))
-            throw new InvalidOperationException($"New category with ID '{newCategoryId}' does not exist");
+            throw new NotFoundException($"New category with ID '{newCategoryId}' does not exist");
 
         return await _productRepository.ReplaceCategoryInAllProductsAsync(oldCategoryId, newCategoryId, cancellationToken);
     }
@@ -358,7 +353,7 @@ public class ProductService : IProductService
     public async Task<bool> UpdateProductDetailAsync(string productId, ProductDetail productDetail, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(productId))
-            throw new ArgumentException("Product ID cannot be empty", nameof(productId));
+            throw new CustomValidationException(new[] { new ValidationFailure(nameof(productId), "Product ID cannot be empty") });
 
         if (productDetail == null)
             throw new ArgumentNullException(nameof(productDetail));
@@ -369,10 +364,10 @@ public class ProductService : IProductService
     public async Task<bool> AddImageToProductAsync(string productId, string imageUrl, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(productId))
-            throw new ArgumentException("Product ID cannot be empty", nameof(productId));
+            throw new CustomValidationException(new[] { new ValidationFailure(nameof(productId), "Product ID cannot be empty") });
 
         if (string.IsNullOrWhiteSpace(imageUrl))
-            throw new ArgumentException("Image URL cannot be empty", nameof(imageUrl));
+            throw new CustomValidationException(new[] { new ValidationFailure(nameof(imageUrl), "Image URL cannot be empty") });
 
         return await _productRepository.AddImageToProductAsync(productId, imageUrl, cancellationToken);
     }
@@ -380,10 +375,10 @@ public class ProductService : IProductService
     public async Task<bool> RemoveImageFromProductAsync(string productId, string imageUrl, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(productId))
-            throw new ArgumentException("Product ID cannot be empty", nameof(productId));
+            throw new CustomValidationException(new[] { new ValidationFailure(nameof(productId), "Product ID cannot be empty") });
 
         if (string.IsNullOrWhiteSpace(imageUrl))
-            throw new ArgumentException("Image URL cannot be empty", nameof(imageUrl));
+            throw new CustomValidationException(new[] { new ValidationFailure(nameof(imageUrl), "Image URL cannot be empty") });
 
         return await _productRepository.RemoveImageFromProductAsync(productId, imageUrl, cancellationToken);
     }
@@ -391,13 +386,13 @@ public class ProductService : IProductService
     public async Task<bool> AddSpecificationAsync(string productId, string key, string value, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(productId))
-            throw new ArgumentException("Product ID cannot be empty", nameof(productId));
+            throw new CustomValidationException(new[] { new ValidationFailure(nameof(productId), "Product ID cannot be empty") });
 
         if (string.IsNullOrWhiteSpace(key))
-            throw new ArgumentException("Specification key cannot be empty", nameof(key));
+            throw new CustomValidationException(new[] { new ValidationFailure(nameof(key), "Specification key cannot be empty") });
 
         if (string.IsNullOrWhiteSpace(value))
-            throw new ArgumentException("Specification value cannot be empty", nameof(value));
+            throw new CustomValidationException(new[] { new ValidationFailure(nameof(value), "Specification value cannot be empty") });
 
         return await _productRepository.AddSpecificationAsync(productId, key, value, cancellationToken);
     }

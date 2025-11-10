@@ -1,0 +1,43 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <Sdk Name="Aspire.AppHost.Sdk" Version="9.5.2"/>
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net9.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <UserSecretsId>be8da896-332a-440c-b66c-5112be175544</UserSecretsId>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Aspire.Hosting.AppHost" Version="9.5.2"/>
+        <PackageReference Include="Aspire.Hosting.MongoDB" Version="9.5.2" />
+        <PackageReference Include="Aspire.Hosting.RabbitMQ" Version="9.5.2" />
+        <PackageReference Include="Aspire.Hosting.Redis" Version="9.5.2" />
+        <PackageReference Include="Aspire.Hosting.SqlServer" Version="9.5.2" />
+        <PackageReference Include="DotNet.Testcontainers" Version="1.6.0" />
+        <PackageReference Include="Testcontainers.RabbitMq" Version="4.8.1" />
+        <PackageReference Include="Testcontainers.Redis" Version="4.8.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\AggregatorService\AggregatorService.csproj" />
+      <ProjectReference Include="..\ApiGateway\ApiGateway.csproj" />
+      <ProjectReference Include="..\Catalog.API\Catalog.API.csproj" />
+      <ProjectReference Include="..\Catalog.Application\Catalog.Application.csproj" />
+      <ProjectReference Include="..\Catalog.Domain\Catalog.Domain.csproj" />
+      <ProjectReference Include="..\Catalog.Infrastructure\Catalog.Infrastructure.csproj" />
+      <ProjectReference Include="..\OrderManagementAPI\OrderManagementAPI.csproj" />
+      <ProjectReference Include="..\OrderManagementBLL\OrderManagementBLL.csproj" />
+      <ProjectReference Include="..\OrderManagementDAL\OrderManagementDAL.csproj" />
+      <ProjectReference Include="..\OrderManagementDomain\OrderManagementDomain.csproj" />
+      <ProjectReference Include="..\OrderManagementTests\OrderManagementTests.csproj" />
+      <ProjectReference Include="..\ServiceDefaults\ServiceDefaults.csproj" />
+      <ProjectReference Include="..\WarehouseAPI\WarehouseAPI.csproj" />
+      <ProjectReference Include="..\WarehouseBLL\WarehouseBLL.csproj" />
+      <ProjectReference Include="..\WarehouseDAL\WarehouseDAL.csproj" />
+      <ProjectReference Include="..\WarehouseDomain\WarehouseDomain.csproj" />
+    </ItemGroup>
+
+</Project>

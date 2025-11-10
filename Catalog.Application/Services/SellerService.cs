@@ -4,6 +4,8 @@ using Catalog.Domain.Entities.Parameters;
 using Catalog.Domain.Interfaces.Repositories;
 using Catalog.Domain.Interfaces.Services;
 using Catalog.Domain.ValueObjects;
+using Catalog.Domain.Exceptions;
+using FluentValidation.Results;
 
 namespace Catalog.Application.Services;
 
@@ -25,13 +27,11 @@ public class SellerService : ISellerService
         if (seller == null)
             throw new ArgumentNullException(nameof(seller));
 
-        // Перевірка унікальності email
         if (!await _sellerRepository.IsEmailUniqueAsync(seller.Email.Value, cancellationToken: cancellationToken))
-            throw new InvalidOperationException($"Seller with email '{seller.Email.Value}' already exists");
+            throw new ConflictException($"Seller with email '{seller.Email.Value}' already exists");
 
-        // Перевірка унікальності телефону
         if (!await _sellerRepository.IsPhoneUniqueAsync(seller.Phone.Value, cancellationToken: cancellationToken))
-            throw new InvalidOperationException($"Seller with phone '{seller.Phone.Value}' already exists");
+            throw new ConflictException($"Seller with phone '{seller.Phone.Value}' already exists");
 
         await _sellerRepository.CreateAsync(seller, cancellationToken);
         return seller;
@@ -68,15 +68,13 @@ public class SellerService : ISellerService
 
         var existing = await _sellerRepository.GetByIdAsync(seller.Id, cancellationToken);
         if (existing == null)
-            throw new InvalidOperationException($"Seller with ID '{seller.Id}' not found");
+            throw new NotFoundException($"Seller with ID '{seller.Id}' not found");
 
-        // Перевірка унікальності email (виключаючи поточного продавця)
         if (!await _sellerRepository.IsEmailUniqueAsync(seller.Email.Value, seller.Id, cancellationToken))
-            throw new InvalidOperationException($"Seller with email '{seller.Email.Value}' already exists");
+            throw new ConflictException($"Seller with email '{seller.Email.Value}' already exists");
 
-        // Перевірка унікальності телефону (виключаючи поточного продавця)
         if (!await _sellerRepository.IsPhoneUniqueAsync(seller.Phone.Value, seller.Id, cancellationToken))
-            throw new InvalidOperationException($"Seller with phone '{seller.Phone.Value}' already exists");
+            throw new ConflictException($"Seller with phone '{seller.Phone.Value}' already exists");
 
         await _sellerRepository.UpdateAsync(seller, cancellationToken);
         return seller;
@@ -85,23 +83,21 @@ public class SellerService : ISellerService
     public async Task<bool> DeleteAsync(string id, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(id))
-            throw new ArgumentException("Seller ID cannot be empty", nameof(id));
+            throw new CustomValidationException(new[] { new ValidationFailure(nameof(id), "Seller ID cannot be empty") });
 
         var seller = await _sellerRepository.GetByIdAsync(id, cancellationToken);
         if (seller == null)
             return false;
 
-        // Перевірка чи є у продавця продукти
         var hasProducts = await _sellerRepository.HasProductsAsync(id, cancellationToken);
         if (hasProducts)
         {
             var productCount = await _sellerRepository.GetProductCountAsync(id, cancellationToken);
-            throw new InvalidOperationException(
+            throw new ConflictException(
                 $"Cannot delete seller '{seller.Name}' because they have {productCount} products. " +
                 "Please reassign or delete the products first.");
         }
 
-        // Soft delete
         await _sellerRepository.DeleteAsync(id, cancellationToken);
         return true;
     }
@@ -181,20 +177,18 @@ public class SellerService : ISellerService
     public async Task<bool> UpdateEmailAsync(string sellerId, string newEmail, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(sellerId))
-            throw new ArgumentException("Seller ID cannot be empty", nameof(sellerId));
+            throw new CustomValidationException(new[] { new ValidationFailure(nameof(sellerId), "Seller ID cannot be empty") });
 
         if (string.IsNullOrWhiteSpace(newEmail))
-            throw new ArgumentException("Email cannot be empty", nameof(newEmail));
+            throw new CustomValidationException(new[] { new ValidationFailure(nameof(newEmail), "Email cannot be empty") });
 
         var seller = await _sellerRepository.GetByIdAsync(sellerId, cancellationToken);
         if (seller == null)
-            throw new InvalidOperationException($"Seller with ID '{sellerId}' not found");
+            throw new NotFoundException($"Seller with ID '{sellerId}' not found");
 
-        // Перевірка унікальності нового email
         if (!await _sellerRepository.IsEmailUniqueAsync(newEmail, sellerId, cancellationToken))
-            throw new InvalidOperationException($"Email '{newEmail}' is already in use");
+            throw new ConflictException($"Email '{newEmail}' is already in use");
 
-        // Валідація email через Value Object
         var email = new Email(newEmail);
         
         return await _sellerRepository.UpdateEmailAsync(sellerId, newEmail, cancellationToken);
@@ -203,20 +197,18 @@ public class SellerService : ISellerService
     public async Task<bool> UpdatePhoneAsync(string sellerId, string newPhone, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(sellerId))
-            throw new ArgumentException("Seller ID cannot be empty", nameof(sellerId));
+            throw new CustomValidationException(new[] { new ValidationFailure(nameof(sellerId), "Seller ID cannot be empty") });
 
         if (string.IsNullOrWhiteSpace(newPhone))
-            throw new ArgumentException("Phone cannot be empty", nameof(newPhone));
+            throw new CustomValidationException(new[] { new ValidationFailure(nameof(newPhone), "Phone cannot be empty") });
 
         var seller = await _sellerRepository.GetByIdAsync(sellerId, cancellationToken);
         if (seller == null)
-            throw new InvalidOperationException($"Seller with ID '{sellerId}' not found");
+            throw new NotFoundException($"Seller with ID '{sellerId}' not found");
 
-        // Перевірка унікальності нового телефону
         if (!await _sellerRepository.IsPhoneUniqueAsync(newPhone, sellerId, cancellationToken))
-            throw new InvalidOperationException($"Phone '{newPhone}' is already in use");
+            throw new ConflictException($"Phone '{newPhone}' is already in use");
 
-        // Валідація телефону через Value Object
         var phone = new Phone(newPhone);
         
         return await _sellerRepository.UpdatePhoneAsync(sellerId, newPhone, cancellationToken);

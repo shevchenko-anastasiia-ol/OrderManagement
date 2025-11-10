@@ -3,6 +3,8 @@ using Catalog.Domain.Entities;
 using Catalog.Domain.Entities.Parameters;
 using Catalog.Domain.Interfaces.Repositories;
 using Catalog.Domain.Interfaces.Services;
+using Catalog.Domain.Exceptions;
+using FluentValidation.Results;
 
 namespace Catalog.Application.Services;
 
@@ -24,15 +26,13 @@ public class ReviewService : IReviewService
         if (review == null)
             throw new ArgumentNullException(nameof(review));
 
-        // Перевірка чи існує продукт
         var productExists = await _productRepository.ExistsAsync(review.ProductId, cancellationToken);
         if (!productExists)
-            throw new InvalidOperationException($"Product with ID '{review.ProductId}' does not exist");
+            throw new NotFoundException($"Product with ID '{review.ProductId}' does not exist");
 
-        // Перевірка чи користувач вже залишав відгук на цей продукт
         var hasReviewed = await _reviewRepository.HasUserReviewedProductAsync(review.ProductId, review.Author, cancellationToken);
         if (hasReviewed)
-            throw new InvalidOperationException($"User '{review.Author}' has already reviewed this product");
+            throw new ConflictException($"User '{review.Author}' has already reviewed this product");
 
         return await _reviewRepository.CreateAsync(review, cancellationToken);
     }
@@ -68,7 +68,7 @@ public class ReviewService : IReviewService
 
         var existing = await _reviewRepository.GetByIdAsync(review.Id, cancellationToken);
         if (existing == null)
-            throw new InvalidOperationException($"Review with ID '{review.Id}' not found");
+            throw new NotFoundException($"Review with ID '{review.Id}' not found");
 
         return await _reviewRepository.UpdateAsync(review, cancellationToken);
     }
@@ -76,7 +76,7 @@ public class ReviewService : IReviewService
     public async Task<bool> DeleteAsync(string id, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(id))
-            throw new ArgumentException("Review ID cannot be empty", nameof(id));
+            throw new CustomValidationException(new[] { new ValidationFailure(nameof(id), "Review ID cannot be empty") });
 
         var review = await _reviewRepository.GetByIdAsync(id, cancellationToken);
         if (review == null)
@@ -96,7 +96,7 @@ public class ReviewService : IReviewService
     public async Task<(PagedList<Review> Items, long TotalCount)> GetPagedByProductAsync(string productId, int pageNumber, int pageSize, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(productId))
-            throw new ArgumentException("Product ID cannot be empty", nameof(productId));
+            throw new CustomValidationException(new[] { new ValidationFailure(nameof(productId), "Product ID cannot be empty") });
 
         if (pageNumber < 1)
             throw new ArgumentException("Page number must be greater than 0", nameof(pageNumber));
@@ -134,7 +134,7 @@ public class ReviewService : IReviewService
     public async Task<(PagedList<Review> Items, long TotalCount)> GetPagedByAuthorAsync(string author, int pageNumber, int pageSize, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(author))
-            throw new ArgumentException("Author cannot be empty", nameof(author));
+            throw new CustomValidationException(new[] { new ValidationFailure(nameof(author), "Author cannot be empty") });
 
         if (pageNumber < 1)
             throw new ArgumentException("Page number must be greater than 0", nameof(pageNumber));
@@ -178,7 +178,7 @@ public class ReviewService : IReviewService
     public async Task<IEnumerable<Review>> GetProductReviewsByRatingAsync(string productId, int rating, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(productId))
-            throw new ArgumentException("Product ID cannot be empty", nameof(productId));
+            throw new CustomValidationException(new[] { new ValidationFailure(nameof(productId), "Product ID cannot be empty") });
 
         if (rating < 1 || rating > 5)
             throw new ArgumentException("Rating must be between 1 and 5", nameof(rating));
@@ -215,7 +215,7 @@ public class ReviewService : IReviewService
     public async Task<Dictionary<int, long>> GetRatingDistributionAsync(string productId, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(productId))
-            throw new ArgumentException("Product ID cannot be empty", nameof(productId));
+            throw new CustomValidationException(new[] { new ValidationFailure(nameof(productId), "Product ID cannot be empty") });
 
         return await _reviewRepository.GetRatingDistributionAsync(productId, cancellationToken);
     }
@@ -231,7 +231,7 @@ public class ReviewService : IReviewService
     public async Task<IEnumerable<Review>> SearchProductReviewsAsync(string productId, string searchTerm, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(productId))
-            throw new ArgumentException("Product ID cannot be empty", nameof(productId));
+            throw new CustomValidationException(new[] { new ValidationFailure(nameof(productId), "Product ID cannot be empty") });
 
         if (string.IsNullOrWhiteSpace(searchTerm))
             return Enumerable.Empty<Review>();
@@ -242,17 +242,17 @@ public class ReviewService : IReviewService
     public async Task<bool> AddReplyToReviewAsync(string reviewId, string author, string text, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(reviewId))
-            throw new ArgumentException("Review ID cannot be empty", nameof(reviewId));
+            throw new CustomValidationException(new[] { new ValidationFailure(nameof(reviewId), "Review ID cannot be empty") });
 
         if (string.IsNullOrWhiteSpace(author))
-            throw new ArgumentException("Author cannot be empty", nameof(author));
+            throw new CustomValidationException(new[] { new ValidationFailure(nameof(author), "Author cannot be empty") });
 
         if (string.IsNullOrWhiteSpace(text))
-            throw new ArgumentException("Reply text cannot be empty", nameof(text));
+            throw new CustomValidationException(new[] { new ValidationFailure(nameof(text), "Reply text cannot be empty") });
 
         var review = await _reviewRepository.GetByIdAsync(reviewId, cancellationToken);
         if (review == null)
-            throw new InvalidOperationException($"Review with ID '{reviewId}' not found");
+            throw new NotFoundException($"Review with ID '{reviewId}' not found");
 
         return await _reviewRepository.AddReplyToReviewAsync(reviewId, author, text, cancellationToken);
     }
@@ -273,11 +273,11 @@ public class ReviewService : IReviewService
     public async Task<bool> RemoveAllRepliesAsync(string reviewId, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(reviewId))
-            throw new ArgumentException("Review ID cannot be empty", nameof(reviewId));
+            throw new CustomValidationException(new[] { new ValidationFailure(nameof(reviewId), "Review ID cannot be empty") });
 
         var review = await _reviewRepository.GetByIdAsync(reviewId, cancellationToken);
         if (review == null)
-            throw new InvalidOperationException($"Review with ID '{reviewId}' not found");
+            throw new NotFoundException($"Review with ID '{reviewId}' not found");
 
         return await _reviewRepository.RemoveAllRepliesAsync(reviewId, cancellationToken);
     }
@@ -293,7 +293,7 @@ public class ReviewService : IReviewService
     public async Task<long> DeleteAllProductReviewsAsync(string productId, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(productId))
-            throw new ArgumentException("Product ID cannot be empty", nameof(productId));
+            throw new CustomValidationException(new[] { new ValidationFailure(nameof(productId), "Product ID cannot be empty") });
 
         return await _reviewRepository.DeleteAllProductReviewsAsync(productId, cancellationToken);
     }
@@ -301,7 +301,7 @@ public class ReviewService : IReviewService
     public async Task<long> DeleteAllAuthorReviewsAsync(string author, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(author))
-            throw new ArgumentException("Author cannot be empty", nameof(author));
+            throw new CustomValidationException(new[] { new ValidationFailure(nameof(author), "Author cannot be empty") });
 
         return await _reviewRepository.DeleteAllAuthorReviewsAsync(author, cancellationToken);
     }

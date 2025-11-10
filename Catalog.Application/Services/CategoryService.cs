@@ -1,8 +1,10 @@
 ﻿using Catalog.Domain.Common.Helpers;
 using Catalog.Domain.Entities;
 using Catalog.Domain.Entities.Parameters;
+using Catalog.Domain.Exceptions;
 using Catalog.Domain.Interfaces.Repositories;
 using Catalog.Domain.Interfaces.Services;
+using FluentValidation.Results;
 
 namespace Catalog.Application.Services;
 
@@ -25,11 +27,10 @@ public class CategoryService : ICategoryService
             throw new ArgumentNullException(nameof(category));
 
         if (string.IsNullOrWhiteSpace(category.Name))
-            throw new ArgumentException("Category name cannot be empty", nameof(category));
+            throw new CustomValidationException(new[] { new ValidationFailure(nameof(category.Name), "Category name cannot be empty") });
 
-        // Перевірка на унікальність імені
         if (await _categoryRepository.ExistsByNameAsync(category.Name, cancellationToken: cancellationToken))
-            throw new InvalidOperationException($"Category with name '{category.Name}' already exists");
+            throw new ConflictException($"Category with name '{category.Name}' already exists");
 
         return await _categoryRepository.CreateAsync(category, cancellationToken);
     }
@@ -37,14 +38,13 @@ public class CategoryService : ICategoryService
     public async Task<Category> CreateCategoryAsync(string name, string userId, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(name))
-            throw new ArgumentException("Category name cannot be empty", nameof(name));
+            throw new CustomValidationException(new[] { new ValidationFailure(nameof(name), "Category name cannot be empty") });
 
         if (string.IsNullOrWhiteSpace(userId))
-            throw new ArgumentException("User ID cannot be empty", nameof(userId));
+            throw new CustomValidationException(new[] { new ValidationFailure(nameof(userId), "User ID cannot be empty") });
 
-        // Перевірка на унікальність імені
         if (await _categoryRepository.ExistsByNameAsync(name, cancellationToken: cancellationToken))
-            throw new InvalidOperationException($"Category with name '{name}' already exists");
+            throw new ConflictException($"Category with name '{name}' already exists");
 
         var category = new Category(name, userId);
         return await _categoryRepository.CreateAsync(category, cancellationToken);
@@ -56,18 +56,17 @@ public class CategoryService : ICategoryService
             throw new ArgumentNullException(nameof(category));
 
         if (string.IsNullOrWhiteSpace(category.Id))
-            throw new ArgumentException("Category ID cannot be empty", nameof(category));
+            throw new CustomValidationException(new[] { new ValidationFailure(nameof(category.Id), "Category ID cannot be empty") });
 
         if (string.IsNullOrWhiteSpace(category.Name))
-            throw new ArgumentException("Category name cannot be empty", nameof(category));
+            throw new CustomValidationException(new[] { new ValidationFailure(nameof(category.Name), "Category name cannot be empty") });
 
         var existing = await _categoryRepository.GetByIdAsync(category.Id, cancellationToken);
         if (existing == null)
-            throw new InvalidOperationException($"Category with ID '{category.Id}' not found");
+            throw new NotFoundException($"Category with ID '{category.Id}' not found");
 
-        // Перевірка на унікальність імені (виключаючи поточну категорію)
         if (await _categoryRepository.ExistsByNameAsync(category.Name, category.Id, cancellationToken))
-            throw new InvalidOperationException($"Category with name '{category.Name}' already exists");
+            throw new ConflictException($"Category with name '{category.Name}' already exists");
 
         return await _categoryRepository.UpdateAsync(category, cancellationToken);
     }
@@ -75,21 +74,20 @@ public class CategoryService : ICategoryService
     public async Task<Category> UpdateCategoryAsync(string id, string name, string userId, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(id))
-            throw new ArgumentException("Category ID cannot be empty", nameof(id));
+            throw new CustomValidationException(new[] { new ValidationFailure(nameof(id), "Category ID cannot be empty") });
 
         if (string.IsNullOrWhiteSpace(name))
-            throw new ArgumentException("Category name cannot be empty", nameof(name));
+            throw new CustomValidationException(new[] { new ValidationFailure(nameof(name), "Category name cannot be empty") });
 
         if (string.IsNullOrWhiteSpace(userId))
-            throw new ArgumentException("User ID cannot be empty", nameof(userId));
+            throw new CustomValidationException(new[] { new ValidationFailure(nameof(userId), "User ID cannot be empty") });
 
         var category = await _categoryRepository.GetByIdAsync(id, cancellationToken);
         if (category == null)
-            throw new InvalidOperationException($"Category with ID '{id}' not found");
+            throw new NotFoundException($"Category with ID '{id}' not found");
 
-        // Перевірка на унікальність імені (виключаючи поточну категорію)
         if (await _categoryRepository.ExistsByNameAsync(name, id, cancellationToken))
-            throw new InvalidOperationException($"Category with name '{name}' already exists");
+            throw new ConflictException($"Category with name '{name}' already exists");
 
         category.Update(name, userId);
         return await _categoryRepository.UpdateAsync(category, cancellationToken);
@@ -98,15 +96,14 @@ public class CategoryService : ICategoryService
     public async Task<bool> DeleteAsync(string id, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(id))
-            throw new ArgumentException("Category ID cannot be empty", nameof(id));
+            throw new CustomValidationException(new[] { new ValidationFailure(nameof(id), "Category ID cannot be empty") });
 
         var category = await _categoryRepository.GetByIdAsync(id, cancellationToken);
         if (category == null)
             return false;
 
-        // Перевірка чи категорія використовується
         if (await _categoryRepository.IsCategoryInUseAsync(id, cancellationToken))
-            throw new InvalidOperationException($"Cannot delete category '{category.Name}' because it is in use by products");
+            throw new ConflictException($"Cannot delete category '{category.Name}' because it is in use by products");
 
         return await _categoryRepository.DeleteAsync(id, cancellationToken);
     }
@@ -114,19 +111,18 @@ public class CategoryService : ICategoryService
     public async Task DeleteCategoryAsync(string id, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(id))
-            throw new ArgumentException("Category ID cannot be empty", nameof(id));
+            throw new CustomValidationException(new[] { new ValidationFailure(nameof(id), "Category ID cannot be empty") });
 
         var category = await _categoryRepository.GetByIdAsync(id, cancellationToken);
         if (category == null)
-            throw new InvalidOperationException($"Category with ID '{id}' not found");
+            throw new NotFoundException($"Category with ID '{id}' not found");
 
-        // Перевірка чи категорія використовується
         if (await _categoryRepository.IsCategoryInUseAsync(id, cancellationToken))
-            throw new InvalidOperationException($"Cannot delete category '{category.Name}' because it is in use by products");
+            throw new ConflictException($"Cannot delete category '{category.Name}' because it is in use by products");
 
         var deleted = await _categoryRepository.DeleteAsync(id, cancellationToken);
         if (!deleted)
-            throw new InvalidOperationException($"Failed to delete category with ID '{id}'");
+            throw new ConcurrencyException(id, expectedVersion: 1, actualVersion: 0);
     }
 
     public async Task<Category?> GetByIdAsync(string id, CancellationToken cancellationToken = default)
@@ -174,7 +170,7 @@ public class CategoryService : ICategoryService
         return await _categoryRepository.GetAllSortedByNameAsync(
             parameters.PageNumber,
             parameters.PageSize,
-            true, // ascending
+            true,
             parameters.OrderBy,
             cancellationToken);
     }
